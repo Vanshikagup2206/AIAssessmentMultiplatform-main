@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="FacetManager">
+    <facet type="kotlin-language" name="Kotlin">
+      <configuration version="5" platform="JVM 11" allPlatforms="JVM [11]" useProjectSettings="false" isTestModule="true" externalProjectId=":composeApp" pureKotlinSourceFolders="D:\AIAssessmentMultiplatform\composeApp\build\generated\compose\resourceGenerator\kotlin\iosX64MainResourceAccessors;D:\AIAssessmentMultiplatform\composeApp\src\debug\java;D:\AIAssessmentMultiplatform\composeApp\build\generated\compose\resourceGenerator\kotlin\iosX64MainResourceCollectors;D:\AIAssessmentMultiplatform\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopTestResourceAccessors;D:\AIAssessmentMultiplatform\composeApp\src\desktopMain\kotlin;D:\AIAssessmentMultiplatform\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopMainResourceAccessors;D:\AIAssessmentMultiplatform\composeApp\src\androidDebug\kotlin;D:\AIAssessmentMultiplatform\composeApp\build\generated\compose\resourceGenerator\kotlin\iosSimulatorArm64MainResourceAccessors;D:\AIAssessmentMultiplatform\composeApp\build\generated\compose\resourceGenerator\kotlin\iosSimulatorArm64MainResourceCollectors;D:\AIAssessmentMultiplatform\composeApp\src\iosX64Main\kotlin;D:\AIAssessmentMultiplatform\composeApp\src\debug\kotlin;D:\AIAssessmentMultiplatform\composeApp\build\generated\compose\resourceGenerator\kotlin\iosArm64MainResourceCollectors;D:\AIAssessmentMultiplatform\composeApp\src\desktopTest\kotlin;D:\AIAssessmentMultiplatform\composeApp\src\iosArm64Main\kotlin;D:\AIAssessmentMultiplatform\composeApp\build\generated\compose\resourceGenerator\kotlin\iosArm64MainResourceAccessors;D:\AIAssessmentMultiplatform\composeApp\build\generated\compose\resourceGenerator\kotlin\androidDebugResourceAccessors;D:\AIAssessmentMultiplatform\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopMainResourceCollectors;D:\AIAssessmentMultiplatform\composeApp\src\iosSimulatorArm64Main\kotlin">
+        <dependsOnModuleNames>:composeApp:commonTest</dependsOnModuleNames>
+        <sourceSets>
+          <sourceSet>MultiPlatformProject.composeApp.commonTest</sourceSet>
+        </sourceSets>
+        <newMppModelJpsModuleKind>COMPILATION_AND_SOURCE_SET_HOLDER</newMppModelJpsModuleKind>
+        <externalSystemTestTasks>
+          <externalSystemTestTask>testDebugUnitTest|:composeApp|android</externalSystemTestTask>
+          <externalSystemTestTask>desktopTest|:composeApp|desktop</externalSystemTestTask>
+        </externalSystemTestTasks>
+        <compilerSettings />
+        <compilerArguments>
+          <stringArguments>
+            <stringArg name="jvmTarget" arg="11" />
+            <stringArg name="apiVersion" arg="1.3" />
+            <stringArg name="languageVersion" arg="1.3" />
+          </stringArguments>
+          <arrayArguments>
+            <arrayArg name="pluginClasspaths" />
+            <arrayArg name="pluginOptions" />
+          </arrayArguments>
+        </compilerArguments>
+      </configuration>
+    </facet>
+  </component>
+</module>
