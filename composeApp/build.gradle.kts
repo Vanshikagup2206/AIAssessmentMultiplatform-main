@@ -57,6 +57,9 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation("org.apache.poi:poi-ooxml:5.2.3") // For DOCX files
+            implementation("org.apache.pdfbox:pdfbox:2.0.27") // For PDF files
+
         }
     }
 }
