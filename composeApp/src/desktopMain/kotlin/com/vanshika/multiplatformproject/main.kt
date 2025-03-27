@@ -26,7 +26,14 @@ import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
 import java.io.FileInputStream
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import org.json.JSONObject
+import org.json.JSONArray
+import java.io.IOException
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.sql.DriverManager.println
+import javax.swing.UIManager.put
 
 fun main() = application {
     Window(onCloseRequest = ::exitApplication, title = "MultiPlatformProject") {
@@ -39,7 +46,8 @@ fun main() = application {
 fun DesktopApp() {
     var selectedFiles by remember { mutableStateOf(mapOf<String, String>()) }
     var showDialog by remember { mutableStateOf(false) }
-    var fileContent by remember { mutableStateOf("") }
+    var fileContent by remember { mutableStateOf("") }  // For left panel
+    var feedbackContent by remember { mutableStateOf("") } // For right panel (AI feedback)
 
     MaterialTheme {
         Column(
@@ -75,7 +83,7 @@ fun DesktopApp() {
                             if (file != null) {
                                 selectedFiles = selectedFiles + (label to file)
                                 if (label == "Answer Sheet") {
-                                    fileContent = readFileContent(file)
+                                    fileContent = readFileContent(file) // Show answer sheet in left panel
                                 }
                             }
                         },
@@ -86,10 +94,19 @@ fun DesktopApp() {
                 }
 
                 Button(onClick = { showDialog = true }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFD4A017))) {
-                    Text("Show Rubric/ Question Paper/ Answer Sheet", color = Color.White)
+                    Text("Show Rubric/Question Paper/Answer Sheet", color = Color.White)
                 }
 
-                Button(onClick = { }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000))) {
+                Button(onClick = {
+                    val answer = readFileContent(selectedFiles["Answer Sheet"] ?: "")
+                    val question = readFileContent(selectedFiles["Exam Paper"] ?: "")
+                    val rubric = readFileContent(selectedFiles["Rubric"] ?: "")
+
+                    evaluateAnswerSheet(answer, rubric) { result ->
+                        feedbackContent = result
+                    }
+
+                }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000))) {
                     Text("Mark Report", color = Color.White)
                 }
             }
@@ -115,36 +132,133 @@ fun DesktopApp() {
             }
 
             Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                // Left Panel - Student Answer Sheet
                 Card(modifier = Modifier.weight(1f).fillMaxSize(), shape = RoundedCornerShape(8.dp), elevation = 4.dp) {
                     Column(modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
-                        Text("Student Report", fontSize = 16.sp, color = Color.Black)
+                        Text("Student Report", fontSize = 16.sp, color = Color.Black, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Answer Sheet Content:", fontSize = 14.sp, color = Color.Gray)
+                        Text("Answer Sheet Content:", fontSize = 14.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(fileContent, fontSize = 14.sp)
                     }
                 }
 
-                Card(modifier = Modifier.weight(1f), shape = RoundedCornerShape(8.dp), elevation = 4.dp) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("AI Score & Feedback", fontSize = 16.sp, color = Color.Black)
+                // Right Panel - AI Score & Feedback
+                Card(modifier = Modifier.weight(1f).fillMaxSize(), shape = RoundedCornerShape(8.dp), elevation = 4.dp) {
+                    Column(modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
+                        Text("AI Score & Feedback", fontSize = 16.sp, color = Color.Black, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Feedback", fontSize = 14.sp, color = Color.Gray)
+                        Text("Feedback:", fontSize = 14.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("Detailed feedback on the student's report...", fontSize = 14.sp)
+                        Text(feedbackContent, fontSize = 14.sp)  // AI-generated feedback here
                     }
                 }
             }
         }
     }
 }
+fun evaluateAnswerSheet(answerSheet: String, rubric: String, onResult: (String) -> Unit) {
+    val client = OkHttpClient()
+    val apiKey = "AIzaSyCpRpmUSkhZnzUPbFvxDxQUJXKMMrDlAlc"
+    val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateText?key=$apiKey"
 
+    val prompt = """
+        Evaluate the student's answer based on the rubric.
+        Provide scores and detailed feedback in JSON format.
+
+        **Rubric:** $rubric  
+        **Student Answer:** $answerSheet  
+    """.trimIndent()
+
+    // ✅ Corrected JSON format
+    val jsonBody = JSONObject().put("messages", JSONArray().put(JSONObject()
+        .put("role", "user")
+        .put("content", prompt)
+    ))
+
+    val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaType())
+
+    val request = Request.Builder().url(url).post(requestBody).build()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            onResult("Error: ${e.message}")
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val responseBody = response.body?.string()
+            println("Raw API Response: $responseBody") // ✅ Debugging ke liye print
+
+            try {
+                val jsonResponse = JSONObject(responseBody ?: "{}")
+                if (jsonResponse.has("error")) {
+                    val errorMessage = jsonResponse.getJSONObject("error").optString("message", "Unknown API error")
+                    onResult("Error from AI: $errorMessage")
+                    return
+                }
+
+                val feedbackList = mutableListOf<String>()
+                val evaluationArray = jsonResponse.optJSONArray("evaluation") ?: JSONArray()
+
+                for (i in 0 until evaluationArray.length()) {
+                    val section = evaluationArray.getJSONObject(i)
+                    val sectionName = section.getString("section")
+                    val feedback = section.getString("feedback")
+                    val score = section.getInt("score")
+                    feedbackList.add("### $sectionName\n$feedback\n**Score:** $score/10\n")
+                }
+
+                val overallScore = jsonResponse.optInt("overall_score", 0)
+                onResult("**AI Evaluation Report**\n\n${feedbackList.joinToString("\n")}\n**Overall Score:** $overallScore/40")
+
+            } catch (e: Exception) {
+                onResult("Error parsing AI response: ${e.message}\n\nRaw Response:\n$responseBody")
+            }
+        }
+    })
+}
+
+
+fun openFileDialog(title: String): String? {
+    val fileDialog = FileDialog(null as Frame?, "Select $title", FileDialog.LOAD)
+    fileDialog.isVisible = true
+
+    return if (fileDialog.file != null) {
+        File(fileDialog.directory, fileDialog.file).absolutePath
+    } else {
+        null
+    }
+}
 fun readFileContent(filePath: String): String {
     val file = File(filePath)
     return when {
         file.extension.equals("docx", ignoreCase = true) -> readDocxContent(file)
         file.extension.equals("pdf", ignoreCase = true) -> readPdfContent(file)
+        file.extension.equals("xlsx", ignoreCase = true) -> readExcelContent(file)  // ✅ Added Excel support
         else -> "Unsupported file format: ${file.extension}"
+    }
+}
+
+// ✅ Function to read Excel (XLSX) content
+fun readExcelContent(file: File): String {
+    return try {
+        FileInputStream(file).use { fis ->
+            val workbook = org.apache.poi.xssf.usermodel.XSSFWorkbook(fis)
+            val sheet = workbook.getSheetAt(0) // First sheet
+            val data = StringBuilder()
+
+            for (row in sheet) {
+                for (cell in row) {
+                    data.append(cell.toString()).append("\t") // Separate columns by tab
+                }
+                data.append("\n") // New line for each row
+            }
+
+            workbook.close()
+            data.toString()
+        }
+    } catch (e: Exception) {
+        "Error reading XLSX file: ${e.message}"
     }
 }
 
@@ -168,13 +282,6 @@ fun readPdfContent(file: File): String {
         "Error reading PDF file: ${e.message}"
     }
 }
-
-fun openFileDialog(title: String): String? {
-    val fileDialog = FileDialog(null as Frame?, "Select $title", FileDialog.LOAD)
-    fileDialog.isVisible = true
-    return fileDialog.file?.let { File(fileDialog.directory, it).absolutePath }
-}
-
 fun openSelectedFile(filePath: String) {
     try {
         val file = File(filePath)
@@ -187,3 +294,6 @@ fun openSelectedFile(filePath: String) {
         e.printStackTrace()
     }
 }
+
+
+// File handling functions remain the same...

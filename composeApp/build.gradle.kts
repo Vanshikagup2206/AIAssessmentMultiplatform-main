@@ -58,7 +58,10 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation("org.apache.poi:poi-ooxml:5.2.3") // For DOCX files
-            implementation("org.apache.pdfbox:pdfbox:2.0.27") // For PDF files
+            implementation("org.apache.pdfbox:pdfbox:2.0.27")// For PDF files
+            implementation("com.squareup.okhttp3:okhttp:4.9.3") // For making API calls
+            implementation("org.json:json:20231013")
+// For handling JSON responses
 
         }
     }
