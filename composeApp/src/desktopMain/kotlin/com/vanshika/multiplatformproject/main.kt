@@ -153,56 +153,49 @@ fun DesktopApp() {
 
 fun evaluateAnswerSheet(answerSheet: String, rubric: String, onResult: (String) -> Unit) {
     val client = OkHttpClient()
-    val apiKey = "AIzaSyCpRpmUSkhZnzUPbFvxDxQUJXKMMrDlAlc"
-    val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateText?key=$apiKey"
+    val apiKey = "AIzaSyCpRpmUSkhZnzUPbFvxDxQUJXKMMrDlAlc"  // 🔴 Replace with your actual API key
+    val model = "models/gemini-1.5-pro-002"  // ✅ Use the correct model name
+    val url = "https://generativelanguage.googleapis.com/v1/models/$model:generateContent?key=$apiKey"
 
-    val prompt = """
-        Evaluate the following answer based on the rubric provided.
-        Return scores and feedback in JSON format.
-        
-        **Rubric:** $rubric  
-        **Answer:** $answerSheet
-    """.trimIndent()
+    val jsonBody = JSONObject()
+        .put("contents", JSONArray().put(JSONObject().put("parts", JSONArray().put(JSONObject().put("text", """
+            Evaluate the following answer based on the rubric provided.
+            Return scores and feedback in JSON format.
 
-    val jsonBody = JSONObject().put("messages", JSONArray().put(JSONObject().put("role", "user").put("content", prompt)))
+            **Rubric:** $rubric  
+            **Answer:** $answerSheet
+        """.trimIndent())))))
+
     val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaType())
     val request = Request.Builder().url(url).post(requestBody).build()
 
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            onResult("Error: ${'$'}{e.message}")
+            onResult("Error: ${e.message}")
         }
+
         override fun onResponse(call: Call, response: Response) {
             val responseBody = response.body?.string()
-            println("Raw API Response: $responseBody") // Debugging ke liye print karein
+            println("Raw API Response: $responseBody") // Debugging
 
             try {
                 val jsonResponse = JSONObject(responseBody ?: "{}")
 
-                // Pehle check karein ki "evaluation" array exist karta hai ya nahi
-                val evaluationArray = jsonResponse.optJSONArray("evaluation") ?: JSONArray()
-                val feedbackList = mutableListOf<String>()
+                // Extract AI-generated text
+                val resultText = jsonResponse.optJSONArray("candidates")
+                    ?.optJSONObject(0)
+                    ?.optJSONObject("content")
+                    ?.optJSONArray("parts")
+                    ?.optJSONObject(0)
+                    ?.optString("text", "No feedback received.")
 
-                for (i in 0 until evaluationArray.length()) {
-                    val section = evaluationArray.optJSONObject(i) ?: continue  // Null check
-                    val sectionName = section.optString("section", "Unknown Section")
-                    val feedback = section.optString("feedback", "No Feedback")
-                    val score = section.optInt("score", 0)
-
-                    feedbackList.add("$sectionName: $feedback (Score: $score/10)")
-                }
-
-                val overallScore = jsonResponse.optInt("overall_score", 0)
-                onResult("AI Evaluation:\n${feedbackList.joinToString("\n")}\nOverall Score: $overallScore/40")
-
+                onResult("AI Evaluation:\n$resultText")
             } catch (e: Exception) {
                 onResult("Error parsing AI response: ${e.message}\nRaw Response:\n$responseBody")
             }
         }
-
     })
 }
-
 
 fun openFileDialog(title: String): String? {
     val fileDialog = FileDialog(null as Frame?, "Select $title", FileDialog.LOAD)
