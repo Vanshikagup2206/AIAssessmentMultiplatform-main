@@ -32,6 +32,7 @@ import org.json.JSONObject
 import org.json.JSONArray
 import java.io.IOException
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.sql.DriverManager.println
 import javax.swing.UIManager.put
 
 fun main() = application {
@@ -153,9 +154,12 @@ fun DesktopApp() {
 
 fun evaluateAnswerSheet(answerSheet: String, rubric: String, onResult: (String) -> Unit) {
     val client = OkHttpClient()
-    val apiKey = "AIzaSyCpRpmUSkhZnzUPbFvxDxQUJXKMMrDlAlc"  // 🔴 Replace with your actual API key
+//    val apiKey = "AIzaSyCpRpmUSkhZnzUPbFvxDxQUJXKMMrDlAlc"  // 🔴 Replace with your actual API key
+     val apiKey ="AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc"
     val model = "models/gemini-1.5-pro-002"  // ✅ Use the correct model name
-    val url = "https://generativelanguage.googleapis.com/v1/models/$model:generateContent?key=$apiKey"
+//    val url = "https://generativelanguage.googleapis.com/v1/models/$model:generateContent?key=$apiKey"
+     val url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=$apiKey"
+
 
     val jsonBody = JSONObject()
         .put("contents", JSONArray().put(JSONObject().put("parts", JSONArray().put(JSONObject().put("text", """
@@ -177,7 +181,10 @@ fun evaluateAnswerSheet(answerSheet: String, rubric: String, onResult: (String) 
         override fun onResponse(call: Call, response: Response) {
             val responseBody = response.body?.string()
             println("Raw API Response: $responseBody") // Debugging
-
+            if (responseBody.isNullOrEmpty()) {
+                onResult("Error: Empty response from AI API. Check API key and request format.")
+                return
+            }
             try {
                 val jsonResponse = JSONObject(responseBody ?: "{}")
 
