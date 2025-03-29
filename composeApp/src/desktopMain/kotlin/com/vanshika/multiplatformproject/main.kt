@@ -155,10 +155,10 @@ fun DesktopApp() {
 fun evaluateAnswerSheet(answerSheet: String, rubric: String, onResult: (String) -> Unit) {
     val client = OkHttpClient()
 //    val apiKey = "AIzaSyCpRpmUSkhZnzUPbFvxDxQUJXKMMrDlAlc"  // 🔴 Replace with your actual API key
-     val apiKey ="AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc"
+    val apiKey ="AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc"
     val model = "models/gemini-1.5-pro-002"  // ✅ Use the correct model name
 //    val url = "https://generativelanguage.googleapis.com/v1/models/$model:generateContent?key=$apiKey"
-     val url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=$apiKey"
+    val url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=$apiKey"
 
 
     val jsonBody = JSONObject()
@@ -166,8 +166,8 @@ fun evaluateAnswerSheet(answerSheet: String, rubric: String, onResult: (String) 
             Evaluate the following answer based on the rubric provided.
             Return scores and feedback in JSON format.
 
-            **Rubric:** $rubric  
-            **Answer:** $answerSheet
+            *Rubric:* $rubric  
+            *Answer:* $answerSheet
         """.trimIndent())))))
 
     val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaType())
