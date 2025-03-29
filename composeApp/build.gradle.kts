@@ -62,8 +62,13 @@ kotlin {
             implementation("com.squareup.okhttp3:okhttp:4.9.3") // For making API calls
             implementation("org.apache.poi:poi-ooxml:5.2.3")
             implementation("org.json:json:20231013")
-
-// For handling JSON responses
+            implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+            implementation("org.apache.logging.log4j:log4j-api:2.20.0")
+            implementation ("com.google.code.gson:gson:2.10")
+            implementation("com.google.ai.client.generativeai:generativeai:0.6.0") // Gemini AI
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4") // Coroutines
+            implementation("io.ktor:ktor-client-core:2.0.0") // HTTP client for API calls
+            implementation("io.ktor:ktor-client-cio:2.0.0")
         }
     }
 }

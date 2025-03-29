@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import io.ktor.utils.io.core.use
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
@@ -39,20 +40,30 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.jetbrains.skia.impl.Stats.enabled
 
 fun main() = application {
+    val answer = "Student's Answer Here"
+    val rubric = "Rubric Criteria Here"
+    val selectedFiles = mapOf("Rubric" to "path/to/rubric.xlsx")
     Window(onCloseRequest = ::exitApplication, title = "MultiPlatformProject") {
-        DesktopApp()
+        DesktopApp(answer, rubric, selectedFiles)
     }
 }
 
 @Composable
 @Preview
-fun DesktopApp() {
+fun DesktopApp( answer: String,
+                rubric: String,
+                selectedFiles: Map<String, String>) {
     var selectedFiles by remember { mutableStateOf(mapOf<String, String>()) }
     var showDialog by remember { mutableStateOf(false) }
     var fileContent by remember { mutableStateOf("") }
-    var feedbackContent by remember { mutableStateOf("") }
+//    var feedbackContent by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-
+    var feedbackContent by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(Unit) {
+        evaluateAnswerSheet(answer, rubric, selectedFiles) { result ->
+            feedbackContent = result
+        }
+    }
     MaterialTheme {
         Column(
             modifier = Modifier
@@ -97,26 +108,30 @@ fun DesktopApp() {
                     }
                 }
 
-                Button(onClick = { showDialog = true }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFD4A017))) {
+                Button(
+                    onClick = { showDialog = true },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFD4A017))
+                ) {
                     Text("Show Selected Files", color = Color.White)
                 }
 
-                Button(onClick = {
-                    val answer = readFileContent(selectedFiles["Answer Sheet"] ?: "")
-                    val question = readFileContent(selectedFiles["Exam Paper"] ?: "")
-                    val rubric = readFileContent(selectedFiles["Rubric"] ?: "")
+                Button(
+                    onClick = {
+                        val answer = readFileContent(selectedFiles["Answer Sheet"] ?: "")
+                        val question = readFileContent(selectedFiles["Exam Paper"] ?: "")
+                        val rubric = readFileContent(selectedFiles["Rubric"] ?: "")
 
-                    evaluateAnswerSheet(
-                        answerSheet = answer,
-                        rubric = rubric,
-                        selectedFiles = selectedFiles,  // Pass the map here
-                    ) { result ->
-                        feedbackContent = result
-                    }
-                }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000)),
-                enabled = !isLoading
+                        evaluateAnswerSheet(
+                            answerSheet = answer,
+                            rubric = rubric,
+                            selectedFiles = selectedFiles  // Pass the map here
+                        ) { result ->
+                            feedbackContent = result
+                        }
+                    }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000)),
+                    enabled = !isLoading
                 ) {
-                    if (isLoading){
+                    if (isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
                             color = Color.White,
@@ -139,7 +154,9 @@ fun DesktopApp() {
                             selectedFiles.forEach { (label, path) ->
                                 Text(
                                     text = "$label: ${File(path).name}",
-                                    modifier = Modifier.clickable { openSelectedFile(path); showDialog = false }
+                                    modifier = Modifier.clickable {
+                                        openSelectedFile(path); showDialog = false
+                                    }
                                         .padding(8.dp)
                                 )
                             }
@@ -149,20 +166,114 @@ fun DesktopApp() {
                 )
             }
 
-            Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Card(modifier = Modifier.weight(1f).fillMaxSize(), shape = RoundedCornerShape(8.dp), elevation = 4.dp) {
-                    Column(modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
-                        Text("Student Report", fontSize = 16.sp, color = Color.Black, fontWeight = FontWeight.Bold)
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Card(
+                    modifier = Modifier.weight(1f).fillMaxSize(),
+                    shape = RoundedCornerShape(8.dp),
+                    elevation = 4.dp
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())
+                    ) {
+                        Text(
+                            "Student Report",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold
+                        )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(fileContent, fontSize = 14.sp)
                     }
                 }
 
-                Card(modifier = Modifier.weight(1f).fillMaxSize(), shape = RoundedCornerShape(8.dp), elevation = 4.dp) {
-                    Column(modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
-                        Text("AI Score & Feedback", fontSize = 16.sp, color = Color.Black, fontWeight = FontWeight.Bold)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(feedbackContent, fontSize = 14.sp)
+//                Column(modifier = Modifier.padding(16.dp)) {
+                    Card(
+                        modifier = Modifier.weight(1f).fillMaxSize(),
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = 4.dp
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())
+                        ) {
+                            Text(
+                                "AI Score & Feedback",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            if (feedbackContent == null) {
+                                CircularProgressIndicator() // Show loading indicator
+                            } else {
+                                // Parse JSON before UI rendering
+                                val jsonResponse = try {
+                                    JSONObject(feedbackContent ?: "{}") // Avoid null exceptions
+                                } catch (e: Exception) {
+                                    null // Return null if parsing fails
+                                }
+
+                                if (jsonResponse != null) {
+                                    DisplayFeedback(jsonResponse) // ✅ Safe to call composable
+                                } else {
+                                    Text(text = "Error: Could not parse response.") // ✅ UI remains valid
+                                }
+
+                            }
+                        }
+                    }
+                }
+//                Card(modifier = Modifier.weight(1f).fillMaxSize(), shape = RoundedCornerShape(8.dp), elevation = 4.dp) {
+//                    Column(modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
+//                        Text("AI Score & Feedback", fontSize = 16.sp, color = Color.Black, fontWeight = FontWeight.Bold)
+//                        Spacer(modifier = Modifier.height(8.dp))
+//                        Text(feedbackContent, fontSize = 14.sp)
+//                    }
+//                }
+            }
+        }
+    }
+
+
+@Composable
+fun DisplayFeedback(jsonResponse: JSONObject) {
+    Column(modifier = Modifier.padding(16.dp)) {
+
+        Text("🔢 Overall Score: ${jsonResponse.optString("overall_score")}", fontSize = 18.sp, color = Color.Blue)
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Text("✅ Strengths:", fontWeight = FontWeight.Bold)
+        jsonResponse.optJSONArray("strengths")?.let {
+            for (i in 0 until it.length()) {
+                Text("- ${it.getString(i)}")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Text("⚠️ Improvement Areas:", fontWeight = FontWeight.Bold)
+        jsonResponse.optJSONArray("improvement_areas")?.let {
+            for (i in 0 until it.length()) {
+                Text("- ${it.getString(i)}", color = Color.Red)
+            }
+        }
+
+        jsonResponse.optJSONArray("section_wise")?.let { sections ->
+            for (i in 0 until sections.length()) {
+                val section = sections.getJSONObject(i)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("📌 Section: ${section.getString("section")}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+
+                Text("📊 Score: ${section.getString("section_score")}", color = Color.Magenta)
+
+                section.optJSONArray("criteria")?.let { criteria ->
+                    for (j in 0 until criteria.length()) {
+                        val crit = criteria.getJSONObject(j)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text("🔹 ${crit.getString("criterion")}: ${crit.getString("score")} (${crit.getString("achieved_level")})")
+                        Text("   - ${crit.getString("feedback")}")
                     }
                 }
             }
@@ -170,11 +281,18 @@ fun DesktopApp() {
     }
 }
 
-fun evaluateAnswerSheet(answerSheet: String, rubric: String, selectedFiles: Map<String, String>,onResult: (String) -> Unit) {
-    val parsedRubric = if (rubric.contains("\t")) parseExcelRubric(File(selectedFiles["Rubric"] ?: "")) else rubric
+fun evaluateAnswerSheet(
+    answerSheet: String,
+    rubric: String,
+    selectedFiles: Map<String, String>,
+    onResult: (String) -> Unit
+) {
+    val parsedRubric =
+        if (rubric.contains("\t")) parseExcelRubric(File(selectedFiles["Rubric"] ?: "")) else rubric
     val client = OkHttpClient()
     val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc" // Verify this key is valid
-    val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
+    val url =
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
     // Truncate inputs to reasonable lengths (though 1.5 Pro supports up to 2M tokens)
     val truncatedRubric = parsedRubric.take(100000) // ~100k characters
     val truncatedAnswer = answerSheet.take(500000) // ~500k characters
@@ -299,12 +417,14 @@ fun evaluateAnswerSheet(answerSheet: String, rubric: String, selectedFiles: Map<
                 }
 
             } catch (e: Exception) {
-                onResult("""
+                onResult(
+                    """
                     Error parsing response: ${e.message}
                     
                     Raw Response (first 2000 chars):
                     ${responseBody.take(2000)}${if (responseBody.length > 2000) "\n[...truncated]" else ""}
-                """.trimIndent())
+                """.trimIndent()
+                )
             }
         }
     })
@@ -415,7 +535,8 @@ fun parseExcelRubric(file: File): String {
                 }
                 // Parse criteria rows
                 else if (cells.size > 3 && cells[0].isNotBlank() && cells[2].isNotBlank()) {
-                    parsedRubric.append("""
+                    parsedRubric.append(
+                        """
                     | Criteria: ${cells[1]}
                     | Max Score: ${cells[2]}
                     | Excellent: ${cells.getOrNull(3) ?: ""}
@@ -423,7 +544,8 @@ fun parseExcelRubric(file: File): String {
                     | Fair: ${cells.getOrNull(5) ?: ""}
                     | Needs Improvement: ${cells.getOrNull(6) ?: ""}
                     |---
-                    """.trimMargin())
+                    """.trimMargin()
+                    )
                 }
             }
             workbook.close()
