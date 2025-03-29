@@ -154,56 +154,130 @@ fun DesktopApp() {
 
 fun evaluateAnswerSheet(answerSheet: String, rubric: String, onResult: (String) -> Unit) {
     val client = OkHttpClient()
-//    val apiKey = "AIzaSyCpRpmUSkhZnzUPbFvxDxQUJXKMMrDlAlc"  // 🔴 Replace with your actual API key
-    val apiKey ="AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc"
-    val model = "models/gemini-1.5-pro-002"  // ✅ Use the correct model name
-//    val url = "https://generativelanguage.googleapis.com/v1/models/$model:generateContent?key=$apiKey"
-    val url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=$apiKey"
+    val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc" // Verify this key is valid
+    val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=$apiKey"
 
+    // Truncate inputs to prevent exceeding API limits
+    val truncatedRubric = rubric.take(10000)
+    val truncatedAnswer = answerSheet.take(15000)
 
-    val jsonBody = JSONObject()
-        .put("contents", JSONArray().put(JSONObject().put("parts", JSONArray().put(JSONObject().put("text", """
-            Evaluate the following answer based on the rubric provided.
-            Return scores and feedback in JSON format.
+    val prompt = """
+        ROLE: You are an expert academic evaluator. Your task is to assess student answers against 
+        provided rubrics and generate detailed feedback with scores.
+        
+        INSTRUCTIONS:
+        1. Analyze the rubric criteria carefully
+        2. Evaluate the answer against each criterion
+        3. Provide specific feedback for improvement
+        4. Assign scores according to the rubric guidelines
+        5. Format your response as JSON
+        
+        RUBRIC CRITERIA:
+        $truncatedRubric
+        
+        STUDENT ANSWER:
+        $truncatedAnswer
+        
+        REQUIRED RESPONSE FORMAT (JSON):
+        {
+            "overall_score": "X/100",
+            "feedback_summary": "Brief overall feedback",
+            "detailed_evaluation": [
+                {
+                    "criterion": "Criterion name",
+                    "score": "X/Y points",
+                    "feedback": "Specific feedback",
+                    "suggestions": "Improvement suggestions"
+                },
+                ... (repeat for each criterion)
+            ],
+            "strengths": ["List of key strengths"],
+            "areas_for_improvement": ["List of key areas needing work"]
+        }
+        
+        IMPORTANT NOTES:
+        - Be constructive and specific in feedback
+        - Balance positive and negative points
+        - Suggest concrete improvements
+        - Maintain academic tone
+    """.trimIndent()
 
-            *Rubric:* $rubric  
-            *Answer:* $answerSheet
-        """.trimIndent())))))
+    val requestBody = JSONObject().apply {
+        put("contents", JSONArray().apply {
+            put(JSONObject().apply {
+                put("parts", JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("text", prompt)
+                    })
+                })
+            })
+        })
+        put("generationConfig", JSONObject().apply {
+            put("temperature", 0.3) // Lower for more deterministic scoring
+            put("topP", 0.7)
+            put("maxOutputTokens", 2048)
+            put("responseMimeType", "application/json")
+        })
+    }.toString().toRequestBody("application/json".toMediaType())
 
-    val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaType())
-    val request = Request.Builder().url(url).post(requestBody).build()
+    val request = Request.Builder()
+        .url(url)
+        .post(requestBody)
+        .build()
 
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            onResult("Error: ${e.message}")
+            onResult("Network Error: ${e.message}")
         }
 
         override fun onResponse(call: Call, response: Response) {
-            val responseBody = response.body?.string()
-            println("Raw API Response: $responseBody") // Debugging
-            if (responseBody.isNullOrEmpty()) {
-                onResult("Error: Empty response from AI API. Check API key and request format.")
-                return
-            }
+            val responseBody = response.body?.string() ?: ""
             try {
-                val jsonResponse = JSONObject(responseBody ?: "{}")
+                val jsonResponse = JSONObject(responseBody)
 
-                // Extract AI-generated text
-                val resultText = jsonResponse.optJSONArray("candidates")
-                    ?.optJSONObject(0)
-                    ?.optJSONObject("content")
-                    ?.optJSONArray("parts")
-                    ?.optJSONObject(0)
-                    ?.optString("text", "No feedback received.")
+                // Check for API errors first
+                if (jsonResponse.has("error")) {
+                    val error = jsonResponse.getJSONObject("error")
+                    onResult("API Error: ${error.getString("message")}")
+                    return
+                }
 
-                onResult("AI Evaluation:\n$resultText")
+                // Parse successful response
+                val candidates = jsonResponse.getJSONArray("candidates")
+                if (candidates.length() == 0) {
+                    onResult("Error: No evaluation returned from API")
+                    return
+                }
+
+                val content = candidates.getJSONObject(0).getJSONObject("content")
+                val parts = content.getJSONArray("parts")
+                if (parts.length() == 0) {
+                    onResult("Error: No evaluation content found")
+                    return
+                }
+
+                val text = parts.getJSONObject(0).getString("text")
+
+                // Try to pretty-print the JSON if possible
+                try {
+                    val json = JSONObject(text)
+                    onResult(json.toString(4)) // 4 spaces indentation
+                } catch (e: Exception) {
+                    // If not valid JSON, return as-is
+                    onResult(text)
+                }
+
             } catch (e: Exception) {
-                onResult("Error parsing AI response: ${e.message}\nRaw Response:\n$responseBody")
+                onResult("""
+                    Error parsing response: ${e.message}
+                    
+                    Raw API Response:
+                    ${responseBody.take(2000)}${if (responseBody.length > 2000) "\n... (truncated)" else ""}
+                """.trimIndent())
             }
         }
     })
 }
-
 fun openFileDialog(title: String): String? {
     val fileDialog = FileDialog(null as Frame?, "Select $title", FileDialog.LOAD)
     fileDialog.isVisible = true
