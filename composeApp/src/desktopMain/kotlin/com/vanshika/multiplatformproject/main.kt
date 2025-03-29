@@ -32,8 +32,11 @@ import org.json.JSONObject
 import org.json.JSONArray
 import java.io.IOException
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.apache.poi.ss.usermodel.CellType
 import java.sql.DriverManager.println
 import javax.swing.UIManager.put
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.jetbrains.skia.impl.Stats.enabled
 
 fun main() = application {
     Window(onCloseRequest = ::exitApplication, title = "MultiPlatformProject") {
@@ -48,6 +51,7 @@ fun DesktopApp() {
     var showDialog by remember { mutableStateOf(false) }
     var fileContent by remember { mutableStateOf("") }
     var feedbackContent by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
     MaterialTheme {
         Column(
@@ -102,11 +106,25 @@ fun DesktopApp() {
                     val question = readFileContent(selectedFiles["Exam Paper"] ?: "")
                     val rubric = readFileContent(selectedFiles["Rubric"] ?: "")
 
-                    evaluateAnswerSheet(answer, rubric) { result ->
+                    evaluateAnswerSheet(
+                        answerSheet = answer,
+                        rubric = rubric,
+                        selectedFiles = selectedFiles,  // Pass the map here
+                    ) { result ->
                         feedbackContent = result
                     }
-                }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000))) {
-                    Text("Mark Report", color = Color.White)
+                }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000)),
+                enabled = !isLoading
+                ) {
+                    if (isLoading){
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Mark Report", color = Color.White)
+                    }
                 }
             }
 
@@ -152,53 +170,141 @@ fun DesktopApp() {
     }
 }
 
-fun evaluateAnswerSheet(answerSheet: String, rubric: String, onResult: (String) -> Unit) {
+fun evaluateAnswerSheet(answerSheet: String, rubric: String, selectedFiles: Map<String, String>,onResult: (String) -> Unit) {
+    val parsedRubric = if (rubric.contains("\t")) parseExcelRubric(File(selectedFiles["Rubric"] ?: "")) else rubric
     val client = OkHttpClient()
-//    val apiKey = "AIzaSyCpRpmUSkhZnzUPbFvxDxQUJXKMMrDlAlc"  // 🔴 Replace with your actual API key
-    val apiKey ="AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc"
-    val model = "models/gemini-1.5-pro-002"  // ✅ Use the correct model name
-//    val url = "https://generativelanguage.googleapis.com/v1/models/$model:generateContent?key=$apiKey"
-    val url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=$apiKey"
+    val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc" // Verify this key is valid
+    val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
+    // Truncate inputs to reasonable lengths (though 1.5 Pro supports up to 2M tokens)
+    val truncatedRubric = parsedRubric.take(100000) // ~100k characters
+    val truncatedAnswer = answerSheet.take(500000) // ~500k characters
 
+    val prompt = """
+    ROLE: Expert academic evaluator analyzing Excel-based rubrics
+    
+    TASK:
+    1. Parse the tabular rubric data
+    2. Extract evaluation criteria and scoring guidelines
+    3. Evaluate answer against each criterion
+    4. Return JSON response with scores
+    
+    RUBRIC:
+        ${if (truncatedRubric.startsWith("ERROR")) "INVALID RUBRIC FORMAT" else truncatedRubric}
+        
+        STUDENT ANSWER:
+        $truncatedAnswer
+        
+    RESPONSE FORMAT:
+    {
+        "overall_score": "X/100",
+        "section_wise": [
+            {
+                "section": "Section Name",
+                "criteria": [
+                    {
+                        "criterion": "Criterion Name",
+                        "score": "X/Y",
+                        "feedback": "Specific comments",
+                        "achieved_level": "Excellent/Good/Fair/Needs improvement"
+                    }
+                ],
+                "section_score": "X/Y"
+            }
+        ],
+        "strengths": [],
+        "improvement_areas": []
+    }
+    
+    INSTRUCTIONS:
+    - Match answer content to rubric levels
+    - Assign scores based on achieved level
+    - Provide detailed feedback for each criterion
+    - Convert all rubric percentages to scores
+""".trimIndent()
 
-    val jsonBody = JSONObject()
-        .put("contents", JSONArray().put(JSONObject().put("parts", JSONArray().put(JSONObject().put("text", """
-            Evaluate the following answer based on the rubric provided.
-            Return scores and feedback in JSON format.
+    val requestBody = JSONObject().apply {
+        put("contents", JSONArray().apply {
+            put(JSONObject().apply {
+                put("parts", JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("text", prompt)
+                    })
+                })
+            })
+        })
+        put("generationConfig", JSONObject().apply {
+            put("temperature", 0.3) // Lower for consistent scoring
+            put("topP", 0.8)
+            put("topK", 40)
+            put("maxOutputTokens", 4096)
+            put("responseMimeType", "application/json")
+        })
+        put("safetySettings", JSONArray().apply {
+            put(JSONObject().apply {
+                put("category", "HARM_CATEGORY_HATE_SPEECH")
+                put("threshold", "BLOCK_NONE")
+            })
+            put(JSONObject().apply {
+                put("category", "HARM_CATEGORY_DANGEROUS_CONTENT")
+                put("threshold", "BLOCK_NONE")
+            })
+        })
+    }.toString().toRequestBody("application/json".toMediaType())
 
-            *Rubric:* $rubric  
-            *Answer:* $answerSheet
-        """.trimIndent())))))
-
-    val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaType())
-    val request = Request.Builder().url(url).post(requestBody).build()
+    val request = Request.Builder()
+        .url(url)
+        .post(requestBody)
+        .build()
 
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            onResult("Error: ${e.message}")
+            onResult("Network Error: ${e.message}")
         }
 
         override fun onResponse(call: Call, response: Response) {
-            val responseBody = response.body?.string()
-            println("Raw API Response: $responseBody") // Debugging
-            if (responseBody.isNullOrEmpty()) {
-                onResult("Error: Empty response from AI API. Check API key and request format.")
-                return
-            }
+            val responseBody = response.body?.string() ?: ""
             try {
-                val jsonResponse = JSONObject(responseBody ?: "{}")
+                val jsonResponse = JSONObject(responseBody)
 
-                // Extract AI-generated text
-                val resultText = jsonResponse.optJSONArray("candidates")
-                    ?.optJSONObject(0)
-                    ?.optJSONObject("content")
-                    ?.optJSONArray("parts")
-                    ?.optJSONObject(0)
-                    ?.optString("text", "No feedback received.")
+                // Handle API errors
+                if (jsonResponse.has("error")) {
+                    val error = jsonResponse.getJSONObject("error")
+                    onResult("API Error (${error.optInt("code")}): ${error.getString("message")}")
+                    return
+                }
 
-                onResult("AI Evaluation:\n$resultText")
+                // Parse successful response
+                val candidates = jsonResponse.optJSONArray("candidates") ?: JSONArray()
+                if (candidates.length() == 0) {
+                    onResult("Error: No evaluation returned from API")
+                    return
+                }
+
+                val content = candidates.getJSONObject(0).getJSONObject("content")
+                val parts = content.getJSONArray("parts")
+                if (parts.length() == 0) {
+                    onResult("Error: No evaluation content found")
+                    return
+                }
+
+                val text = parts.getJSONObject(0).getString("text")
+
+                // Try to pretty-print the JSON
+                try {
+                    val json = JSONObject(text)
+                    onResult(json.toString(4))
+                } catch (e: Exception) {
+                    // If not valid JSON, return as-is with note
+                    onResult("Received non-JSON response:\n$text")
+                }
+
             } catch (e: Exception) {
-                onResult("Error parsing AI response: ${e.message}\nRaw Response:\n$responseBody")
+                onResult("""
+                    Error parsing response: ${e.message}
+                    
+                    Raw Response (first 2000 chars):
+                    ${responseBody.take(2000)}${if (responseBody.length > 2000) "\n[...truncated]" else ""}
+                """.trimIndent())
             }
         }
     })
@@ -212,10 +318,16 @@ fun openFileDialog(title: String): String? {
 
 fun readFileContent(filePath: String): String {
     val file = File(filePath)
-    return when {
-        file.extension.equals("docx", ignoreCase = true) -> readDocxContent(file)
-        file.extension.equals("pdf", ignoreCase = true) -> readPdfContent(file)
-        else -> "Unsupported file format: ${file.extension}"
+    return when (file.extension.lowercase()) {
+        "pdf" -> readPdfContent(file)
+        "docx" -> readDocxContent(file)
+        "xlsx" -> parseExcelRubric(file)
+        "txt", "csv", "json" -> file.readText()
+        else -> try {
+            file.readText()
+        } catch (e: Exception) {
+            "UNSUPPORTED FILE FORMAT: ${file.extension}"
+        }
     }
 }
 
@@ -248,5 +360,76 @@ fun openSelectedFile(filePath: String) {
         }
     } catch (e: Exception) {
         e.printStackTrace()
+    }
+}
+
+fun readExcelContent(file: File): String {
+    return try {
+        FileInputStream(file).use { fis ->
+            val workbook = XSSFWorkbook(fis)
+            val sheet = workbook.getSheetAt(0)
+            val data = StringBuilder()
+
+            for (row in sheet) {
+                for (cell in row) {
+                    when (cell.cellType) {
+                        CellType.STRING -> data.append(cell.stringCellValue)
+                        CellType.NUMERIC -> data.append(cell.numericCellValue)
+                        CellType.BOOLEAN -> data.append(cell.booleanCellValue)
+                        else -> data.append("")
+                    }
+                    data.append("\t")
+                }
+                data.append("\n")
+            }
+            workbook.close()
+            data.toString()
+        }
+    } catch (e: Exception) {
+        "ERROR READING EXCEL: ${e.message}"
+    }
+}
+
+fun parseExcelRubric(file: File): String {
+    return try {
+        FileInputStream(file).use { fis ->
+            val workbook = XSSFWorkbook(fis)
+            val sheet = workbook.getSheetAt(0)
+            val parsedRubric = StringBuilder()
+
+            var currentSection = ""
+
+            for (row in sheet) {
+                val cells = row.map { cell ->
+                    when (cell.cellType) {
+                        CellType.STRING -> cell.stringCellValue
+                        CellType.NUMERIC -> cell.numericCellValue.toString()
+                        CellType.BOOLEAN -> cell.booleanCellValue.toString()
+                        else -> ""
+                    }
+                }
+
+                // Parse section headers
+                if (cells.size > 1 && cells[1].isNotBlank()) {
+                    currentSection = cells[1]
+                }
+                // Parse criteria rows
+                else if (cells.size > 3 && cells[0].isNotBlank() && cells[2].isNotBlank()) {
+                    parsedRubric.append("""
+                    | Criteria: ${cells[1]}
+                    | Max Score: ${cells[2]}
+                    | Excellent: ${cells.getOrNull(3) ?: ""}
+                    | Good: ${cells.getOrNull(4) ?: ""}
+                    | Fair: ${cells.getOrNull(5) ?: ""}
+                    | Needs Improvement: ${cells.getOrNull(6) ?: ""}
+                    |---
+                    """.trimMargin())
+                }
+            }
+            workbook.close()
+            parsedRubric.toString()
+        }
+    } catch (e: Exception) {
+        "ERROR PARSING EXCEL RUBRIC: ${e.message}"
     }
 }
