@@ -11,7 +11,6 @@ plugins {
 //    alias(libs.plugins.composeCompiler)
 
 }
-
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -51,8 +50,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.21")
-
-
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -61,16 +58,25 @@ kotlin {
             implementation("org.slf4j:slf4j-simple:2.0.12")      // Required by Tess4J
             implementation("org.apache.poi:poi-ooxml:5.2.3") // For DOCX files
             implementation("org.apache.pdfbox:pdfbox:2.0.27")// For PDF files
+            // OCR (Tesseract) for extracting text from images/scanned PDFs
+//            implementation("net.sourceforge.tess4j:tess4j:4.5.5")
+            implementation(compose.material) // For fallback if needed
+            // Image handling (to show extracted images)
+            implementation("org.apache.commons:commons-io:1.3.2")
+
+
             implementation("com.squareup.okhttp3:okhttp:4.9.3") // For making API calls
             implementation("org.apache.poi:poi-ooxml:5.2.3")
             implementation("org.json:json:20231013")
             implementation("org.apache.logging.log4j:log4j-core:2.20.0")
             implementation("org.apache.logging.log4j:log4j-api:2.20.0")
             implementation ("com.google.code.gson:gson:2.10")
-            implementation("com.google.ai.client.generativeai:generativeai:0.6.0") // Gemini AI
+//            implementation("com.google.ai.client.generativeai:generativeai:0.6.0") // Gemini AI
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4") // Coroutines
             implementation("io.ktor:ktor-client-core:2.0.0") // HTTP client for API calls
             implementation("io.ktor:ktor-client-cio:2.0.0")
+            implementation("com.squareup.okio:okio:3.2.0")
+
         }
     }
 }
