@@ -267,7 +267,7 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        Text("⚠️ Improvement Areas:", fontWeight = FontWeight.Bold)
+        Text("⚠ Improvement Areas:", fontWeight = FontWeight.Bold)
         jsonResponse.optJSONArray("improvement_areas")?.let {
             for (i in 0 until it.length()) {
                 Text("- ${it.getString(i)}", color = Color.Red)
@@ -338,27 +338,27 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
     }
 
 }
-    fun evaluateAnswerSheet(
-        answerSheet: String,
-        rubric: String,
-        selectedFiles: Map<String, String>,
-        onResult: (String) -> Unit
-    ) {
-        val parsedRubric =
-            if (rubric.contains("\t")) parseExcelRubric(
-                File(
-                    selectedFiles["Rubric"] ?: ""
-                )
-            ) else rubric
-        val client = OkHttpClient()
-        val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc" // Verify this key is valid
-        val url =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
-        // Truncate inputs to reasonable lengths (though 1.5 Pro supports up to 2M tokens)
-        val truncatedRubric = parsedRubric.take(100000) // ~100k characters
-        val truncatedAnswer = answerSheet.take(500000) // ~500k characters
+fun evaluateAnswerSheet(
+    answerSheet: String,
+    rubric: String,
+    selectedFiles: Map<String, String>,
+    onResult: (String) -> Unit
+) {
+    val parsedRubric =
+        if (rubric.contains("\t")) parseExcelRubric(
+            File(
+                selectedFiles["Rubric"] ?: ""
+            )
+        ) else rubric
+    val client = OkHttpClient()
+    val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc" // Verify this key is valid
+    val url =
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
+    // Truncate inputs to reasonable lengths (though 1.5 Pro supports up to 2M tokens)
+    val truncatedRubric = parsedRubric.take(100000) // ~100k characters
+    val truncatedAnswer = answerSheet.take(500000) // ~500k characters
 
-        val prompt = """
+    val prompt = """
     ROLE: Expert academic evaluator analyzing Excel-based rubrics
     
     TASK:
@@ -401,203 +401,203 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
     - Convert all rubric percentages to scores
 """.trimIndent()
 
-        val requestBody = JSONObject().apply {
-            put("contents", JSONArray().apply {
-                put(JSONObject().apply {
-                    put("parts", JSONArray().apply {
-                        put(JSONObject().apply {
-                            put("text", prompt)
-                        })
+    val requestBody = JSONObject().apply {
+        put("contents", JSONArray().apply {
+            put(JSONObject().apply {
+                put("parts", JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("text", prompt)
                     })
                 })
             })
-            put("generationConfig", JSONObject().apply {
-                put("temperature", 0.3) // Lower for consistent scoring
-                put("topP", 0.8)
-                put("topK", 40)
-                put("maxOutputTokens", 4096)
-                put("responseMimeType", "application/json")
+        })
+        put("generationConfig", JSONObject().apply {
+            put("temperature", 0.3) // Lower for consistent scoring
+            put("topP", 0.8)
+            put("topK", 40)
+            put("maxOutputTokens", 4096)
+            put("responseMimeType", "application/json")
+        })
+        put("safetySettings", JSONArray().apply {
+            put(JSONObject().apply {
+                put("category", "HARM_CATEGORY_HATE_SPEECH")
+                put("threshold", "BLOCK_NONE")
             })
-            put("safetySettings", JSONArray().apply {
-                put(JSONObject().apply {
-                    put("category", "HARM_CATEGORY_HATE_SPEECH")
-                    put("threshold", "BLOCK_NONE")
-                })
-                put(JSONObject().apply {
-                    put("category", "HARM_CATEGORY_DANGEROUS_CONTENT")
-                    put("threshold", "BLOCK_NONE")
-                })
+            put(JSONObject().apply {
+                put("category", "HARM_CATEGORY_DANGEROUS_CONTENT")
+                put("threshold", "BLOCK_NONE")
             })
-        }.toString().toRequestBody("application/json".toMediaType())
+        })
+    }.toString().toRequestBody("application/json".toMediaType())
 
-        val request = Request.Builder()
-            .url(url)
-            .post(requestBody)
-            .build()
+    val request = Request.Builder()
+        .url(url)
+        .post(requestBody)
+        .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                onResult("Network Error: ${e.message}")
-            }
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            onResult("Network Error: ${e.message}")
+        }
 
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string() ?: ""
+        override fun onResponse(call: Call, response: Response) {
+            val responseBody = response.body?.string() ?: ""
+            try {
+                val jsonResponse = JSONObject(responseBody)
+
+                // Handle API errors
+                if (jsonResponse.has("error")) {
+                    val error = jsonResponse.getJSONObject("error")
+                    onResult("API Error (${error.optInt("code")}): ${error.getString("message")}")
+                    return
+                }
+
+                // Parse successful response
+                val candidates = jsonResponse.optJSONArray("candidates") ?: JSONArray()
+                if (candidates.length() == 0) {
+                    onResult("Error: No evaluation returned from API")
+                    return
+                }
+
+                val content = candidates.getJSONObject(0).getJSONObject("content")
+                val parts = content.getJSONArray("parts")
+                if (parts.length() == 0) {
+                    onResult("Error: No evaluation content found")
+                    return
+                }
+
+                val text = parts.getJSONObject(0).getString("text")
+
+                // Try to pretty-print the JSON
                 try {
-                    val jsonResponse = JSONObject(responseBody)
-
-                    // Handle API errors
-                    if (jsonResponse.has("error")) {
-                        val error = jsonResponse.getJSONObject("error")
-                        onResult("API Error (${error.optInt("code")}): ${error.getString("message")}")
-                        return
-                    }
-
-                    // Parse successful response
-                    val candidates = jsonResponse.optJSONArray("candidates") ?: JSONArray()
-                    if (candidates.length() == 0) {
-                        onResult("Error: No evaluation returned from API")
-                        return
-                    }
-
-                    val content = candidates.getJSONObject(0).getJSONObject("content")
-                    val parts = content.getJSONArray("parts")
-                    if (parts.length() == 0) {
-                        onResult("Error: No evaluation content found")
-                        return
-                    }
-
-                    val text = parts.getJSONObject(0).getString("text")
-
-                    // Try to pretty-print the JSON
-                    try {
-                        val json = JSONObject(text)
-                        onResult(json.toString(4))
-                    } catch (e: Exception) {
-                        // If not valid JSON, return as-is with note
-                        onResult("Received non-JSON response:\n$text")
-                    }
-
+                    val json = JSONObject(text)
+                    onResult(json.toString(4))
                 } catch (e: Exception) {
-                    onResult(
-                        """
+                    // If not valid JSON, return as-is with note
+                    onResult("Received non-JSON response:\n$text")
+                }
+
+            } catch (e: Exception) {
+                onResult(
+                    """
                     Error parsing response: ${e.message}
                     
                     Raw Response (first 2000 chars):
                     ${responseBody.take(2000)}${if (responseBody.length > 2000) "\n[...truncated]" else ""}
                 """.trimIndent()
-                    )
-                }
+                )
             }
-        })
-    }
+        }
+    })
+}
 
-    fun openFileDialog(title: String): String? {
-        val fileDialog = FileDialog(null as Frame?, "Select $title", FileDialog.LOAD)
-        fileDialog.isVisible = true
-        return fileDialog.file?.let { File(fileDialog.directory, it).absolutePath }
-    }
+fun openFileDialog(title: String): String? {
+    val fileDialog = FileDialog(null as Frame?, "Select $title", FileDialog.LOAD)
+    fileDialog.isVisible = true
+    return fileDialog.file?.let { File(fileDialog.directory, it).absolutePath }
+}
 
-    fun readFileContent(filePath: String): String {
+fun readFileContent(filePath: String): String {
+    val file = File(filePath)
+    return when (file.extension.lowercase()) {
+        "pdf" -> readPdfContent(file)
+        "docx" -> readDocxContent(file)
+        "xlsx" -> parseExcelRubric(file)
+        "txt", "csv", "json" -> file.readText()
+        else -> try {
+            file.readText()
+        } catch (e: Exception) {
+            "UNSUPPORTED FILE FORMAT: ${file.extension}"
+        }
+    }
+}
+
+fun readDocxContent(file: File): String {
+    return try {
+        FileInputStream(file).use { fis ->
+            val doc = XWPFDocument(fis)
+            doc.paragraphs.joinToString("\n") { it.text }
+        }
+    } catch (e: Exception) {
+        "Error reading DOCX file: ${e.message}"
+    }
+}
+
+fun readPdfContent(file: File): String {
+    return try {
+        PDDocument.load(file).use { doc ->
+            PDFTextStripper().getText(doc)
+        }
+    } catch (e: Exception) {
+        "Error reading PDF file: ${e.message}"
+    }
+}
+
+fun openSelectedFile(filePath: String) {
+    try {
         val file = File(filePath)
-        return when (file.extension.lowercase()) {
-            "pdf" -> readPdfContent(file)
-            "docx" -> readDocxContent(file)
-            "xlsx" -> parseExcelRubric(file)
-            "txt", "csv", "json" -> file.readText()
-            else -> try {
-                file.readText()
-            } catch (e: Exception) {
-                "UNSUPPORTED FILE FORMAT: ${file.extension}"
-            }
+        if (file.exists() && Desktop.isDesktopSupported()) {
+            Desktop.getDesktop().open(file)
         }
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
+}
 
-    fun readDocxContent(file: File): String {
-        return try {
-            FileInputStream(file).use { fis ->
-                val doc = XWPFDocument(fis)
-                doc.paragraphs.joinToString("\n") { it.text }
-            }
-        } catch (e: Exception) {
-            "Error reading DOCX file: ${e.message}"
-        }
-    }
+fun readExcelContent(file: File): String {
+    return try {
+        FileInputStream(file).use { fis ->
+            val workbook = XSSFWorkbook(fis)
+            val sheet = workbook.getSheetAt(0)
+            val data = StringBuilder()
 
-    fun readPdfContent(file: File): String {
-        return try {
-            PDDocument.load(file).use { doc ->
-                PDFTextStripper().getText(doc)
-            }
-        } catch (e: Exception) {
-            "Error reading PDF file: ${e.message}"
-        }
-    }
-
-    fun openSelectedFile(filePath: String) {
-        try {
-            val file = File(filePath)
-            if (file.exists() && Desktop.isDesktopSupported()) {
-                Desktop.getDesktop().open(file)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    fun readExcelContent(file: File): String {
-        return try {
-            FileInputStream(file).use { fis ->
-                val workbook = XSSFWorkbook(fis)
-                val sheet = workbook.getSheetAt(0)
-                val data = StringBuilder()
-
-                for (row in sheet) {
-                    for (cell in row) {
-                        when (cell.cellType) {
-                            CellType.STRING -> data.append(cell.stringCellValue)
-                            CellType.NUMERIC -> data.append(cell.numericCellValue)
-                            CellType.BOOLEAN -> data.append(cell.booleanCellValue)
-                            else -> data.append("")
-                        }
-                        data.append("\t")
+            for (row in sheet) {
+                for (cell in row) {
+                    when (cell.cellType) {
+                        CellType.STRING -> data.append(cell.stringCellValue)
+                        CellType.NUMERIC -> data.append(cell.numericCellValue)
+                        CellType.BOOLEAN -> data.append(cell.booleanCellValue)
+                        else -> data.append("")
                     }
-                    data.append("\n")
+                    data.append("\t")
                 }
-                workbook.close()
-                data.toString()
+                data.append("\n")
             }
-        } catch (e: Exception) {
-            "ERROR READING EXCEL: ${e.message}"
+            workbook.close()
+            data.toString()
         }
+    } catch (e: Exception) {
+        "ERROR READING EXCEL: ${e.message}"
     }
+}
 
-    fun parseExcelRubric(file: File): String {
-        return try {
-            FileInputStream(file).use { fis ->
-                val workbook = XSSFWorkbook(fis)
-                val sheet = workbook.getSheetAt(0)
-                val parsedRubric = StringBuilder()
+fun parseExcelRubric(file: File): String {
+    return try {
+        FileInputStream(file).use { fis ->
+            val workbook = XSSFWorkbook(fis)
+            val sheet = workbook.getSheetAt(0)
+            val parsedRubric = StringBuilder()
 
-                var currentSection = ""
+            var currentSection = ""
 
-                for (row in sheet) {
-                    val cells = row.map { cell ->
-                        when (cell.cellType) {
-                            CellType.STRING -> cell.stringCellValue
-                            CellType.NUMERIC -> cell.numericCellValue.toString()
-                            CellType.BOOLEAN -> cell.booleanCellValue.toString()
-                            else -> ""
-                        }
+            for (row in sheet) {
+                val cells = row.map { cell ->
+                    when (cell.cellType) {
+                        CellType.STRING -> cell.stringCellValue
+                        CellType.NUMERIC -> cell.numericCellValue.toString()
+                        CellType.BOOLEAN -> cell.booleanCellValue.toString()
+                        else -> ""
                     }
+                }
 
-                    // Parse section headers
-                    if (cells.size > 1 && cells[1].isNotBlank()) {
-                        currentSection = cells[1]
-                    }
-                    // Parse criteria rows
-                    else if (cells.size > 3 && cells[0].isNotBlank() && cells[2].isNotBlank()) {
-                        parsedRubric.append(
-                            """
+                // Parse section headers
+                if (cells.size > 1 && cells[1].isNotBlank()) {
+                    currentSection = cells[1]
+                }
+                // Parse criteria rows
+                else if (cells.size > 3 && cells[0].isNotBlank() && cells[2].isNotBlank()) {
+                    parsedRubric.append(
+                        """
                     | Criteria: ${cells[1]}
                     | Max Score: ${cells[2]}
                     | Excellent: ${cells.getOrNull(3) ?: ""}
@@ -606,13 +606,13 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
                     | Needs Improvement: ${cells.getOrNull(6) ?: ""}
                     |---
                     """.trimMargin()
-                        )
-                    }
+                    )
                 }
-                workbook.close()
-                parsedRubric.toString()
             }
-        } catch (e: Exception) {
-            "ERROR PARSING EXCEL RUBRIC: ${e.message}"
+            workbook.close()
+            parsedRubric.toString()
         }
+    } catch (e: Exception) {
+        "ERROR PARSING EXCEL RUBRIC: ${e.message}"
     }
+}
