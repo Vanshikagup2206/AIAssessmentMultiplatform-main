@@ -57,6 +57,8 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation("net.sourceforge.tess4j:tess4j:5.8.0")  // Tesseract OCR for Java
+            implementation("org.slf4j:slf4j-simple:2.0.12")      // Required by Tess4J
             implementation("org.apache.poi:poi-ooxml:5.2.3") // For DOCX files
             implementation("org.apache.pdfbox:pdfbox:2.0.27")// For PDF files
             implementation("com.squareup.okhttp3:okhttp:4.9.3") // For making API calls
