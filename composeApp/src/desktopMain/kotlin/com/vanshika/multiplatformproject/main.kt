@@ -19,25 +19,31 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import io.ktor.utils.io.core.use
-import org.apache.poi.xwpf.usermodel.XWPFDocument
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
+import org.apache.poi.ss.usermodel.CellType
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.apache.poi.xwpf.usermodel.XWPFDocument
+import org.json.JSONArray
+import org.json.JSONObject
 import java.awt.Desktop
 import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
 import java.io.FileInputStream
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import org.json.JSONObject
-import org.json.JSONArray
 import java.io.IOException
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.apache.poi.ss.usermodel.CellType
 import java.sql.DriverManager.println
 import javax.swing.UIManager.put
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.jetbrains.skia.impl.Stats.enabled
+import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.pdmodel.PDResources
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
+import java.util.concurrent.TimeUnit
+import javax.imageio.ImageIO
+import net.sourceforge.tess4j.Tesseract
+import net.sourceforge.tess4j.TesseractException
 
 fun main() = application {
     val answer = "Student's Answer Here"
@@ -267,7 +273,7 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        Text("⚠ Improvement Areas:", fontWeight = FontWeight.Bold)
+        Text("⚠️ Improvement Areas:", fontWeight = FontWeight.Bold)
         jsonResponse.optJSONArray("improvement_areas")?.let {
             for (i in 0 until it.length()) {
                 Text("- ${it.getString(i)}", color = Color.Red)
@@ -338,6 +344,7 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
     }
 
 }
+
 fun evaluateAnswerSheet(
     answerSheet: String,
     rubric: String,
@@ -350,7 +357,11 @@ fun evaluateAnswerSheet(
                 selectedFiles["Rubric"] ?: ""
             )
         ) else rubric
-    val client = OkHttpClient()
+    val client = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .build()
+
     val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc" // Verify this key is valid
     val url =
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
@@ -526,10 +537,10 @@ fun readDocxContent(file: File): String {
 fun readPdfContent(file: File): String {
     return try {
         PDDocument.load(file).use { doc ->
-            PDFTextStripper().getText(doc)
+            PDFTextStripper().getText(doc).trim()  // Remove image extraction logic
         }
     } catch (e: Exception) {
-        "Error reading PDF file: ${e.message}"
+        "Error reading PDF: ${e.message}"
     }
 }
 
@@ -614,5 +625,53 @@ fun parseExcelRubric(file: File): String {
         }
     } catch (e: Exception) {
         "ERROR PARSING EXCEL RUBRIC: ${e.message}"
+    }
+}
+
+fun extractImagesFromPdf(file: File): List<String> {
+    val imagePaths = mutableListOf<String>()
+    try {
+        PDDocument.load(file).use { document ->
+            for (pageNum in 0 until document.numberOfPages) {
+                val page = document.getPage(pageNum)
+                val resources: PDResources = page.resources ?: continue
+
+                for (xObjectName in resources.xObjectNames) {
+                    val xObject = resources.getXObject(xObjectName)
+                    if (xObject is PDImageXObject) {
+                        val image = xObject.image
+                        val outputFile = File.createTempFile("pdf_image_${pageNum}_", ".png")
+                        ImageIO.write(image, "PNG", outputFile)
+                        imagePaths.add(outputFile.absolutePath)
+                    }
+                }
+            }
+        }
+    } catch (e: IOException) {
+        println("Error extracting images: ${e.message}")
+    }
+    return imagePaths
+}
+
+fun extractTextFromPdfWithOCR(file: File): String {
+    val images = extractImagesFromPdf(file)
+    if (images.isEmpty()) return readPdfContent(file)
+
+    val text = StringBuilder()
+    images.forEach { imagePath ->
+        text.append(runTesseractOCR(File(imagePath)))  // Implement Tesseract
+    }
+    return text.toString()
+}
+
+fun runTesseractOCR(imageFile: File): String {
+    return try {
+        val tesseract = Tesseract()
+        tesseract.setDatapath("path/to/tessdata")  // Path to tessdata directory
+        tesseract.setLanguage("eng")               // Language (e.g., "eng" for English)
+        tesseract.doOCR(imageFile)                // Extract text
+    } catch (e: TesseractException) {
+        println("OCR Error: ${e.message}")
+        "OCR_FAILED"
     }
 }
