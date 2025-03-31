@@ -1,0 +1,30 @@
+<variant
+    name="release"
+    package="com.vanshika.multiplatformproject"
+    minSdkVersion="21"
+    targetSdkVersion="34"
+    mergedManifest="build\intermediates\merged_manifest\release\AndroidManifest.xml"
+    manifestMergeReport="build\outputs\logs\manifest-merger-release-report.txt"
+    proguardFiles="build\intermediates\default_proguard_files\global\proguard-android.txt-8.0.0"
+    partialResultsDir="build\intermediates\lint_vital_partial_results\release\out">
+  <buildFeatures
+      namespacing="REQUIRED"/>
+  <sourceProviders>
+    <sourceProvider
+        manifests="src\androidMain\AndroidManifest.xml"
+        javaDirectories="src\main\java;src\release\java;src\androidMain\kotlin;build\generated\compose\resourceGenerator\kotlin\androidMainResourceAccessors;src\main\kotlin;build\generated\compose\resourceGenerator\kotlin\androidMainResourceCollectors;src\release\kotlin"
+        resDirectories="src\main\res;src\androidMain\res;src\release\res"
+        assetsDirectories="src\main\assets;src\androidMain\assets;src\release\assets"/>
+  </sourceProviders>
+  <testSourceProviders>
+  </testSourceProviders>
+  <testFixturesSourceProviders>
+  </testFixturesSourceProviders>
+  <mainArtifact
+      classOutputs="build\intermediates\javac\release\classes;build\tmp\kotlin-classes\release;build\kotlinToolingMetadata;build\intermediates\compile_and_runtime_not_namespaced_r_class_jar\release\R.jar"
+      applicationId="com.vanshika.multiplatformproject"
+      generatedSourceFolders="build\generated\ap_generated_sources\release\out"
+      generatedResourceFolders="build\generated\res\resValues\release"
+      desugaredMethodsFiles="C:\Users\tanve\.gradle\caches\8.9\transforms\d2b6571df355a343b97ce8910eabc4f8\transformed\D8BackportedDesugaredMethods.txt">
+  </mainArtifact>
+</variant>

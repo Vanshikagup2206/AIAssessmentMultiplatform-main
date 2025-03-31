@@ -6,9 +6,9 @@
 6
 7    <uses-sdk
 8        android:minSdkVersion="21"
-8-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
+8-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
 9        android:targetSdkVersion="34" />
-9-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
+9-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
 10
 11    <permission
 11-->[androidx.core:core:1.13.1] C:\Users\tanve\.gradle\caches\8.9\transforms\d60d5506a7f643365f74e5b903b2e0bf\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
@@ -22,39 +22,39 @@
 15-->[androidx.core:core:1.13.1] C:\Users\tanve\.gradle\caches\8.9\transforms\d60d5506a7f643365f74e5b903b2e0bf\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
 16
 17    <application
-17-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:4:5-21:19
+17-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:4:5-21:19
 18        android:allowBackup="true"
-18-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:5:9-35
+18-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:5:9-35
 19        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 19-->[androidx.core:core:1.13.1] C:\Users\tanve\.gradle\caches\8.9\transforms\d60d5506a7f643365f74e5b903b2e0bf\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
 20        android:debuggable="true"
 21        android:icon="@mipmap/ic_launcher"
-21-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:6:9-43
+21-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:6:9-43
 22        android:label="@string/app_name"
-22-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:7:9-41
+22-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:7:9-41
 23        android:roundIcon="@mipmap/ic_launcher_round"
-23-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:8:9-54
+23-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:8:9-54
 24        android:supportsRtl="true"
-24-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:9:9-35
+24-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:9:9-35
 25        android:theme="@android:style/Theme.Material.Light.NoActionBar" >
-25-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:10:9-72
+25-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:10:9-72
 26        <activity
-26-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:11:9-20:20
+26-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:11:9-20:20
 27            android:name="com.vanshika.multiplatformproject.MainActivity"
-27-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:14:13-41
+27-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:14:13-41
 28            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mnc|colorMode|density|fontScale|fontWeightAdjustment|keyboard|layoutDirection|locale|mcc|navigation|smallestScreenSize|touchscreen|uiMode"
-28-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:13:13-225
+28-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:13:13-225
 29            android:exported="true" >
-29-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:12:13-36
+29-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:12:13-36
 30            <intent-filter>
-30-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:15:13-19:29
+30-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:15:13-19:29
 31                <action android:name="android.intent.action.MAIN" />
-31-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:16:17-69
-31-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:16:25-66
+31-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:16:17-69
+31-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:16:25-66
 32
 33                <category android:name="android.intent.category.LAUNCHER" />
-33-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:18:17-77
-33-->D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:18:27-74
+33-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:18:17-77
+33-->D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:18:27-74
 34            </intent-filter>
 35        </activity>
 36

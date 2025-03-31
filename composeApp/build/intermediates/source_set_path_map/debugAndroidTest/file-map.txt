@@ -1,0 +1,4 @@
+com.vanshika.multiplatformproject.test.composeApp-androidTest-0 D:\AIAssessmentMultiplatform-main\composeApp\build\generated\res\resValues\androidTest\debug
+com.vanshika.multiplatformproject.test.composeApp-mergeDebugAndroidTestResources-1 D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.vanshika.multiplatformproject.test.composeApp-mergeDebugAndroidTestResources-2 D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.vanshika.multiplatformproject.test.composeApp-merged_res-3 D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\merged_res\debugAndroidTest

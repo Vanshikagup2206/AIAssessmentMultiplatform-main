@@ -47,19 +47,18 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
+
             implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.21")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+            implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
             implementation("net.sourceforge.tess4j:tess4j:5.8.0")  // Tesseract OCR for Java
             implementation("org.slf4j:slf4j-simple:2.0.12")      // Required by Tess4J
             implementation("org.apache.poi:poi-ooxml:5.2.3") // For DOCX files
             implementation("org.apache.pdfbox:pdfbox:2.0.27")// For PDF files
-            // OCR (Tesseract) for extracting text from images/scanned PDFs
-//            implementation("net.sourceforge.tess4j:tess4j:4.5.5")
             implementation(compose.material) // For fallback if needed
             // Image handling (to show extracted images)
             implementation("org.apache.commons:commons-io:1.3.2")
@@ -120,9 +119,13 @@ compose.desktop {
         mainClass = "com.vanshika.multiplatformproject.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+//            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(org.jetbrains.compose.desktop.application.dsl.TargetFormat.Exe)
             packageName = "com.vanshika.multiplatformproject"
             packageVersion = "1.0.0"
+            windows {
+                iconFile.set(project.file("icon.ico"))
+            }
         }
     }
 }

@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
-INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
-INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
-INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
+ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
+INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
+INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
+INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
 MERGED from [androidx.activity:activity:1.9.3] C:\Users\tanve\.gradle\caches\8.9\transforms\52825e10106029bf93ddeccf23d7211c\transformed\activity-1.9.3\AndroidManifest.xml:17:1-22:12
 MERGED from [org.jetbrains.compose.components:components-resources-android:1.7.0] C:\Users\tanve\.gradle\caches\8.9\transforms\8c38cf32cea55b3aaded104238d576fd\transformed\library-release\AndroidManifest.xml:2:1-16:12
 MERGED from [androidx.compose.material3:material3-android:1.3.0] C:\Users\tanve\.gradle\caches\8.9\transforms\534778033f31cb992d103feae1641f7d\transformed\material3-release\AndroidManifest.xml:17:1-22:12
@@ -51,25 +51,25 @@ MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\tanve\.g
 MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\tanve\.gradle\caches\8.9\transforms\2605d06ce8bfc2e6a402834f93693c95\transformed\startup-runtime-1.1.1\AndroidManifest.xml:17:1-33:12
 MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\tanve\.gradle\caches\8.9\transforms\0521ac106d229c150969dd36dd962a4f\transformed\tracing-1.0.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\tanve\.gradle\caches\8.9\transforms\401b10e7b9cb6a0a5860b097bd13b1fc\transformed\interpolator-1.0.0\AndroidManifest.xml:17:1-22:12
-INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
-INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
-INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
+INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
+INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
+INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
 	package
-		INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
-		INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
+		INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
+		INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
 	android:versionName
-		INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
-		INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
+		INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
+		INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
 	android:versionCode
-		INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
-		INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
+		INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:2:1-23:12
+		INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
 	xmlns:android
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:2:11-69
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:2:11-69
 application
-ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:4:5-21:19
+ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:4:5-21:19
 MERGED from [org.jetbrains.compose.components:components-resources-android:1.7.0] C:\Users\tanve\.gradle\caches\8.9\transforms\8c38cf32cea55b3aaded104238d576fd\transformed\library-release\AndroidManifest.xml:7:5-14:19
 MERGED from [org.jetbrains.compose.components:components-resources-android:1.7.0] C:\Users\tanve\.gradle\caches\8.9\transforms\8c38cf32cea55b3aaded104238d576fd\transformed\library-release\AndroidManifest.xml:7:5-14:19
 MERGED from [androidx.compose.ui:ui-tooling-android:1.7.1] C:\Users\tanve\.gradle\caches\8.9\transforms\3d170b7774e1354acde34a6856b60e39\transformed\ui-tooling-release\AndroidManifest.xml:22:5-26:19
@@ -89,39 +89,39 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\tanve\.gradle\cach
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.13.1] C:\Users\tanve\.gradle\caches\8.9\transforms\d60d5506a7f643365f74e5b903b2e0bf\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:9:9-35
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:9:9-35
 	android:label
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:7:9-41
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:7:9-41
 	android:roundIcon
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:8:9-54
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:8:9-54
 	android:icon
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:6:9-43
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:6:9-43
 	android:allowBackup
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:5:9-35
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:5:9-35
 	android:theme
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:10:9-72
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:10:9-72
 activity#com.vanshika.multiplatformproject.MainActivity
-ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:11:9-20:20
+ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:11:9-20:20
 	android:exported
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:12:13-36
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:12:13-36
 	android:configChanges
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:13:13-225
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:13:13-225
 	android:name
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:14:13-41
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:14:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:15:13-19:29
+ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:15:13-19:29
 action#android.intent.action.MAIN
-ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:16:17-69
+ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:16:17-69
 	android:name
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:16:25-66
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:16:25-66
 category#android.intent.category.LAUNCHER
-ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:18:17-77
+ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:18:17-77
 	android:name
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml:18:27-74
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml:18:27-74
 uses-sdk
-INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
-INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
+INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
+INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
 MERGED from [androidx.activity:activity:1.9.3] C:\Users\tanve\.gradle\caches\8.9\transforms\52825e10106029bf93ddeccf23d7211c\transformed\activity-1.9.3\AndroidManifest.xml:20:5-44
 MERGED from [androidx.activity:activity:1.9.3] C:\Users\tanve\.gradle\caches\8.9\transforms\52825e10106029bf93ddeccf23d7211c\transformed\activity-1.9.3\AndroidManifest.xml:20:5-44
 MERGED from [org.jetbrains.compose.components:components-resources-android:1.7.0] C:\Users\tanve\.gradle\caches\8.9\transforms\8c38cf32cea55b3aaded104238d576fd\transformed\library-release\AndroidManifest.xml:5:5-44
@@ -216,16 +216,16 @@ MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\tanve\.gradle\caches\8.9\t
 MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\tanve\.gradle\caches\8.9\transforms\0521ac106d229c150969dd36dd962a4f\transformed\tracing-1.0.0\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\tanve\.gradle\caches\8.9\transforms\401b10e7b9cb6a0a5860b097bd13b1fc\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
 MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\tanve\.gradle\caches\8.9\transforms\401b10e7b9cb6a0a5860b097bd13b1fc\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
-INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
-INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
+INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
+INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
 	android:targetSdkVersion
-		INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
-		INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
+		INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
+		INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
-		ADDED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
-		INJECTED from D:\AIAssessmentMultiplatform\composeApp\src\androidMain\AndroidManifest.xml
+		INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
+		ADDED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
+		INJECTED from D:\AIAssessmentMultiplatform-main\composeApp\src\androidMain\AndroidManifest.xml
 provider#org.jetbrains.compose.resources.AndroidContextProvider
 ADDED from [org.jetbrains.compose.components:components-resources-android:1.7.0] C:\Users\tanve\.gradle\caches\8.9\transforms\8c38cf32cea55b3aaded104238d576fd\transformed\library-release\AndroidManifest.xml:8:9-13:20
 	android:enabled
