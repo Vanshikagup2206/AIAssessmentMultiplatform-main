@@ -1,8 +1,32 @@
-- name: Build JAR
-  run: ./gradlew build
+name: Build JAR
 
-- name: Upload JAR Artifact
-  uses: actions/upload-artifact@v4
-  with:
-    name: app-jar
-    path: build/libs/*.jar
+on:
+  push:
+    branches:
+      - main  # Adjust branch as needed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'  # Use the correct Java version for your project
+
+      - name: Grant Execute Permission for Gradle
+        run: chmod +x gradlew
+
+      - name: Build JAR
+        run: ./gradlew jar
+
+      - name: Upload JAR Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: build/libs/*.jar
