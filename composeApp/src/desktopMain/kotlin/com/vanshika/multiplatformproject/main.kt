@@ -153,11 +153,11 @@ fun DesktopApp(
                         currentPrompt = """
                     Evaluate this answer sheet against the provided rubric:
                     
-                    RUBRIC:
-                    ${readFileContent(selectedFiles["Rubric"] ?: "").take(10000)}
-                    
-                    ANSWER SHEET:
-                    ${readFileContent(selectedFiles["Answer Sheet"] ?: "").take(50000)}
+//                    RUBRIC:
+//                    ${readFileContent(selectedFiles["Rubric"] ?: "").take(10000)}
+//                    
+//                    ANSWER SHEET:
+//                    ${readFileContent(selectedFiles["Answer Sheet"] ?: "").take(50000)}
                     
                     Provide detailed feedback with scores.
                     """.trimIndent()
@@ -221,6 +221,7 @@ fun DesktopApp(
                                                 selectedFiles["Answer Sheet"] ?: ""
                                             ),
                                             rubric = readFileContent(selectedFiles["Rubric"] ?: ""),
+                                            questionPaper = readFileContent(selectedFiles["Question Paper"] ?: ""),
                                             prompt = currentPrompt, // Pass the custom prompt
                                             selectedFiles = selectedFiles
                                         ) { result ->
@@ -278,7 +279,7 @@ fun DesktopApp(
                             modifier = Modifier
                                 .verticalScroll(scrollState)
                                 .padding(16.dp)
-                                .heightIn(max = 600.dp)  // ✅ Set a reasonable max height
+                                .fillMaxWidth()  // ✅ Set a reasonable max height
                         ) {
                             Text(
                                 "Student Report",
@@ -309,48 +310,59 @@ fun DesktopApp(
                         .weight(1f)
                         .fillMaxHeight()
                 ) {
-                    // PROMPT BOX (added above the right panel)
+                    // PROMPT BOX - Now scrollable
                     if (finalPrompt != null) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp),
+                                .padding(bottom = 16.dp)
+                                .heightIn(max = 200.dp), // Constrain max height
                             elevation = 4.dp,
-                            backgroundColor = Color(0xFFE3F2FD) // Light blue background
+                            backgroundColor = Color(0xFFE3F2FD)
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier.fillMaxWidth()
+                            val promptScrollState = rememberScrollState()
+                            Box(Modifier.fillMaxSize()) {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(16.dp)
+                                        .verticalScroll(promptScrollState)
                                 ) {
-                                    Text(
-                                        "Evaluation Prompt",
-                                        style = MaterialTheme.typography.subtitle1,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    IconButton(
-                                        onClick = {
-                                            showPromptPanel = true
-                                            currentPrompt = finalPrompt ?: ""
-                                        },
-                                        modifier = Modifier.size(24.dp)
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier.fillMaxWidth()
                                     ) {
-                                        Icon(Icons.Default.Edit, "Edit Prompt")
+                                        Text(
+                                            "Evaluation Prompt",
+                                            style = MaterialTheme.typography.subtitle1,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        IconButton(
+                                            onClick = {
+                                                showPromptPanel = true
+                                                currentPrompt = finalPrompt ?: ""
+                                            },
+                                            modifier = Modifier.size(24.dp)
+                                        ) {
+                                            Icon(Icons.Default.Edit, "Edit Prompt")
+                                        }
                                     }
+                                    Text(
+                                        finalPrompt!!,
+                                        modifier = Modifier.padding(top = 8.dp),
+                                        fontSize = 14.sp
+                                        // Removed maxLines and overflow since we're scrolling now
+                                    )
                                 }
-                                Text(
-                                    finalPrompt!!,
-                                    modifier = Modifier.padding(top = 8.dp),
-                                    fontSize = 14.sp,
-                                    maxLines = 3,
-                                    overflow = TextOverflow.Ellipsis
+                                VerticalScrollbar(
+                                    modifier = Modifier.align(Alignment.CenterEnd),
+                                    adapter = rememberScrollbarAdapter(promptScrollState)
                                 )
                             }
                         }
                     }
 
-                    // RIGHT PANEL (AI Evaluation Only)
+                    // RIGHT PANEL (AI Evaluation) - Fixed scrolling
                     Card(
                         modifier = Modifier
                             .weight(1f)
@@ -360,9 +372,10 @@ fun DesktopApp(
                         Box(Modifier.fillMaxSize()) {
                             val scrollState = rememberScrollState()
 
+                            // Main content column
                             Column(
                                 modifier = Modifier
-                                    .padding(16.dp)
+                                    .fillMaxSize()
                                     .verticalScroll(scrollState)
                             ) {
                                 if (isLoading) {
@@ -373,15 +386,29 @@ fun DesktopApp(
                                         CircularProgressIndicator()
                                     }
                                 } else if (feedbackContent != null) {
+                                    // Header
                                     Text(
                                         "AI Evaluation",
                                         style = MaterialTheme.typography.h6,
-                                        modifier = Modifier.padding(bottom = 8.dp)
+                                        modifier = Modifier.padding(16.dp)
                                     )
-                                    DisplayFeedback(JSONObject(feedbackContent!!))
+
+                                    // Content area with proper constraints
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp)
+                                            .wrapContentHeight()
+                                    ) {
+                                        // Make sure DisplayFeedback can expand
+                                        DisplayFeedback(
+                                            jsonResponse = JSONObject(feedbackContent!!)
+                                        )
+                                    }
                                 }
                             }
 
+                            // Scrollbar
                             VerticalScrollbar(
                                 modifier = Modifier
                                     .align(Alignment.CenterEnd)
@@ -597,6 +624,7 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
 fun evaluateAnswerSheet(
     answerSheet: String,
     rubric: String,
+    questionPaper: String,  // Added question paper parameter
     prompt: String,
     selectedFiles: Map<String, String>,
     onResult: (String) -> Unit
@@ -612,56 +640,79 @@ fun evaluateAnswerSheet(
         .readTimeout(60, TimeUnit.SECONDS)
         .build()
 
-    val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc" // Verify this key is valid
+    val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc"
     val url =
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
-    // Truncate inputs to reasonable lengths (though 1.5 Pro supports up to 2M tokens)
-    val truncatedRubric = parsedRubric.take(100000) // ~100k characters
-    val truncatedAnswer = answerSheet.take(500000) // ~500k characters
+
+    // Truncate inputs
+    val truncatedRubric = parsedRubric.take(100000)
+    val truncatedAnswer = answerSheet.take(500000)
+    val truncatedQuestions = questionPaper.take(100000)  // Added question paper truncation
 
     val prompt = """
-    ROLE: Expert academic evaluator analyzing Excel-based rubrics
+    ROLE: Expert academic evaluator analyzing answer sheets against questions and rubrics
     
     TASK:
-    1. Parse the tabular rubric data
-    2. Extract evaluation criteria and scoring guidelines
-    3. Evaluate answer against each criterion
+    1. Review the question paper to understand what was asked
+    2. Parse the tabular rubric data
+    3. Evaluate answer against both the question requirements and rubric criteria
     4. Return JSON response with scores
     
+    QUESTION PAPER:
+    ${if (questionPaper.isBlank()) "NOT PROVIDED" else truncatedQuestions}
+    
     RUBRIC:
-        ${if (truncatedRubric.startsWith("ERROR")) "INVALID RUBRIC FORMAT" else truncatedRubric}
+    ${if (truncatedRubric.startsWith("ERROR")) "INVALID RUBRIC FORMAT" else truncatedRubric}
         
-        STUDENT ANSWER:
-        $truncatedAnswer
+    STUDENT ANSWER:
+    $truncatedAnswer
         
     RESPONSE FORMAT:
     {
         "overall_score": "X/100",
+        "question_accuracy": "X% (answers correctly addressing questions)",
         "section_wise": [
             {
                 "section": "Section Name",
-                "criteria": [
+                "questions": [
                     {
-                        "criterion": "Criterion Name",
-                        "score": "X/Y",
-                        "feedback": "Specific comments",
-                        "achieved_level": "Excellent/Good/Fair/Needs improvement"
+                        "question_id": "Q1",
+                        "question_text": "...",
+                        "answer_relevance": "Fully/Partially/Not addressed",
+                        "criteria": [
+                            {
+                                "criterion": "Criterion Name",
+                                "score": "X/Y",
+                                "feedback": "Specific comments",
+                                "achieved_level": "Excellent/Good/Fair/Needs improvement"
+                            }
+                        ]
                     }
                 ],
                 "section_score": "X/Y"
             }
         ],
         "strengths": [],
-        "improvement_areas": []
+        "improvement_areas": [],
+        "answer_quality": {
+            "completeness": "X%",
+            "accuracy": "X%",
+            "relevance": "X%"
+        }
     }
     
-    INSTRUCTIONS:
-    - Match answer content to rubric levels
-    - Assign scores based on achieved level
-    - Provide detailed feedback for each criterion
-    - Convert all rubric percentages to scores
+    EVALUATION INSTRUCTIONS:
+    1. FIRST verify if the answer actually addresses the question asked
+    2. THEN evaluate against rubric criteria
+    3. Flag answers that don't match questions
+    4. Provide separate metrics for:
+       - Question relevance (does it answer what was asked?)
+       - Rubric compliance (how well it meets grading criteria)
+    5. Convert all percentages to scores
+    6. For answers not matching questions, suggest what was actually asked
 """.trimIndent()
 
+    // Rest of the function remains the same...
     val requestBody = JSONObject().apply {
         put("contents", JSONArray().apply {
             put(JSONObject().apply {
@@ -673,7 +724,7 @@ fun evaluateAnswerSheet(
             })
         })
         put("generationConfig", JSONObject().apply {
-            put("temperature", 0.3) // Lower for consistent scoring
+            put("temperature", 0.3)
             put("topP", 0.8)
             put("topK", 40)
             put("maxOutputTokens", 4096)
@@ -706,14 +757,12 @@ fun evaluateAnswerSheet(
             try {
                 val jsonResponse = JSONObject(responseBody)
 
-                // Handle API errors
                 if (jsonResponse.has("error")) {
                     val error = jsonResponse.getJSONObject("error")
                     onResult("API Error (${error.optInt("code")}): ${error.getString("message")}")
                     return
                 }
 
-                // Parse successful response
                 val candidates = jsonResponse.optJSONArray("candidates") ?: JSONArray()
                 if (candidates.length() == 0) {
                     onResult("Error: No evaluation returned from API")
@@ -729,12 +778,10 @@ fun evaluateAnswerSheet(
 
                 val text = parts.getJSONObject(0).getString("text")
 
-                // Try to pretty-print the JSON
                 try {
                     val json = JSONObject(text)
                     onResult(json.toString(4))
                 } catch (e: Exception) {
-                    // If not valid JSON, return as-is with note
                     onResult("Received non-JSON response:\n$text")
                 }
 
