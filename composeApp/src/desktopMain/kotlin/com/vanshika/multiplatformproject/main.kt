@@ -49,6 +49,10 @@ import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import net.sourceforge.tess4j.Tesseract
 import net.sourceforge.tess4j.TesseractException
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.v2.ScrollbarAdapter
 
 fun main() = application {
     val answer = "Student's Answer Here"
@@ -362,7 +366,7 @@ fun DesktopApp(
                         }
                     }
 
-                    // RIGHT PANEL (AI Evaluation) - Fixed scrolling
+                    // RIGHT PANEL (AI Evaluation) with LazyColumn
                     Card(
                         modifier = Modifier
                             .weight(1f)
@@ -370,51 +374,35 @@ fun DesktopApp(
                         elevation = 4.dp
                     ) {
                         Box(Modifier.fillMaxSize()) {
-                            val scrollState = rememberScrollState()
+                            if (isLoading) {
+                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    CircularProgressIndicator()
+                                }
+                            } else if (feedbackContent != null) {
+                                val scrollState = rememberLazyListState()
 
-                            // Main content column
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .verticalScroll(scrollState)
-                            ) {
-                                if (isLoading) {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator()
-                                    }
-                                } else if (feedbackContent != null) {
-                                    // Header
-                                    Text(
-                                        "AI Evaluation",
-                                        style = MaterialTheme.typography.h6,
-                                        modifier = Modifier.padding(16.dp)
-                                    )
-
-                                    // Content area with proper constraints
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp)
-                                            .wrapContentHeight()
-                                    ) {
-                                        // Make sure DisplayFeedback can expand
-                                        DisplayFeedback(
-                                            jsonResponse = JSONObject(feedbackContent!!)
+                                LazyColumn(
+                                    state = scrollState,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentPadding = PaddingValues(16.dp)
+                                ) {
+                                    item {
+                                        Text(
+                                            "AI Evaluation",
+                                            style = MaterialTheme.typography.h6,
+                                            modifier = Modifier.padding(bottom = 16.dp)
                                         )
                                     }
+                                    item {
+                                        DisplayFeedback(JSONObject(feedbackContent!!))
+                                    }
                                 }
-                            }
 
-                            // Scrollbar
-                            VerticalScrollbar(
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .fillMaxHeight(),
-                                adapter = rememberScrollbarAdapter(scrollState)
-                            )
+                                VerticalScrollbar(
+                                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                                    adapter = rememberScrollbarAdapter(scrollState) // Direct usage
+                                )
+                            }
                         }
                     }
                 }
@@ -518,6 +506,96 @@ fun PromptInputPanel(
             modifier = Modifier.align(Alignment.End)
         ) {
             Text("Send Custom Prompt")
+        }
+    }
+}
+
+@Composable
+fun DisplayFeedbackLazy(
+    jsonResponse: JSONObject,
+    modifier: Modifier = Modifier
+) {
+    var adjustedScore by remember {
+        mutableStateOf(
+            jsonResponse.optDouble("overall_score").takeIf { !it.isNaN() }?.toFloat() ?: 0f
+        )
+    }
+
+    Column(modifier = modifier) {
+        // Overall Score
+        Text(
+            "🔢 Overall Score: ${jsonResponse.optString("overall_score")}",
+            fontSize = 18.sp,
+            color = Color.Blue
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Strengths
+        Text("✅ Strengths:", fontWeight = FontWeight.Bold)
+        jsonResponse.optJSONArray("strengths")?.let { strengths ->
+            strengths.forEachIndexed { index, _ ->
+                Text("- ${strengths.getString(index)}")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Improvement Areas
+        Text("⚠️ Improvement Areas:", fontWeight = FontWeight.Bold)
+        jsonResponse.optJSONArray("improvement_areas")?.let { areas ->
+            areas.forEachIndexed { index, _ ->
+                Text("- ${areas.getString(index)}", color = Color.Red)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Score Adjustment
+        Column {
+            Text(
+                "🔢 Adjusted Score: ${"%.1f".format(adjustedScore)}",
+                fontSize = 18.sp,
+                color = Color.Blue
+            )
+            Slider(
+                value = adjustedScore,
+                onValueChange = { adjustedScore = it },
+                valueRange = 0f..100f,
+                steps = 99,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Button(
+                onClick = { /* Save adjusted score */ },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text("Confirm Score")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Section-wise feedback
+        jsonResponse.optJSONArray("section_wise")?.let { sections ->
+            sections.forEachIndexed { i, _ ->
+                val section = sections.getJSONObject(i)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    "📌 Section: ${section.getString("section")}",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Text("📊 Score: ${section.getString("section_score")}", color = Color.Magenta)
+
+                section.optJSONArray("criteria")?.let { criteria ->
+                    criteria.forEachIndexed { j, _ ->
+                        val crit = criteria.getJSONObject(j)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("🔹 ${crit.getString("criterion")}: ${crit.getString("score")}")
+                        Text("   - ${crit.getString("feedback")}")
+                    }
+                }
+            }
         }
     }
 }
@@ -970,5 +1048,27 @@ fun runTesseractOCR(imageFile: File): String {
     } catch (e: TesseractException) {
         println("OCR Error: ${e.message}")
         "OCR_FAILED"
+    }
+}
+
+@Composable
+fun rememberLazyListScrollAdapter(
+    scrollState: LazyListState
+): ScrollbarAdapter {
+    return remember(scrollState) {
+        object : ScrollbarAdapter {
+            override val scrollOffset: Double
+                get() = scrollState.firstVisibleItemScrollOffset.toDouble()
+
+            override val contentSize: Double
+                get() = scrollState.layoutInfo.totalItemsCount.toDouble()
+
+            override val viewportSize: Double
+                get() = scrollState.layoutInfo.visibleItemsInfo.size.toDouble()
+
+            override suspend fun scrollTo(scrollOffset: Double) {
+                scrollState.scrollToItem(scrollOffset.toInt())
+            }
+        }
     }
 }
