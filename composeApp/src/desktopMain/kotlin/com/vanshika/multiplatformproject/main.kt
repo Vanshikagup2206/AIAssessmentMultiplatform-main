@@ -1,19 +1,24 @@
 package com.vanshika.multiplatformproject
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
@@ -65,13 +70,20 @@ fun DesktopApp(
     var showDialog by remember { mutableStateOf(false) }
     var fileContent by remember { mutableStateOf("") }
 //    var feedbackContent by remember { mutableStateOf("") }
+    var customPromptResponse by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var feedbackContent by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(Unit) {
-        evaluateAnswerSheet(answer, rubric, selectedFiles) { result ->
-            feedbackContent = result
-        }
-    }
+
+    // New states for prompt management
+    var showPromptPanel by remember { mutableStateOf(false) }
+    var currentPrompt by remember { mutableStateOf("") }
+    var finalPrompt by remember { mutableStateOf<String?>(null) }
+
+//    LaunchedEffect(Unit) {
+//        evaluateAnswerSheet(answer, rubric, selectedFiles) { result ->
+//            feedbackContent = result
+//        }
+//    }
     MaterialTheme {
         Column(
             modifier = Modifier
@@ -128,16 +140,32 @@ fun DesktopApp(
                         val answer = readFileContent(selectedFiles["Answer Sheet"] ?: "")
                         val question = readFileContent(selectedFiles["Exam Paper"] ?: "")
                         val rubric = readFileContent(selectedFiles["Rubric"] ?: "")
+                        showPromptPanel = true
 
-                        evaluateAnswerSheet(
-                            answerSheet = answer,
-                            rubric = rubric,
-                            selectedFiles = selectedFiles  // Pass the map here
-                        ) { result ->
-                            feedbackContent = result
-                        }
+//                        evaluateAnswerSheet(
+//                            answerSheet = answer,
+//                            rubric = rubric,
+//                            selectedFiles = selectedFiles  // Pass the map here
+//                        ) { result ->
+//                            feedbackContent = result
+//                        }
+                        // Generate initial prompt
+                        currentPrompt = """
+                    Evaluate this answer sheet against the provided rubric:
+                    
+                    RUBRIC:
+                    ${readFileContent(selectedFiles["Rubric"] ?: "").take(10000)}
+                    
+                    ANSWER SHEET:
+                    ${readFileContent(selectedFiles["Answer Sheet"] ?: "").take(50000)}
+                    
+                    Provide detailed feedback with scores.
+                    """.trimIndent()
+
                     }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000)),
-                    enabled = !isLoading
+                    enabled = !isLoading && selectedFiles.contains("Answer Sheet") && selectedFiles.contains(
+                        "Rubric"
+                    )
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
@@ -147,6 +175,64 @@ fun DesktopApp(
                         )
                     } else {
                         Text("Mark Report", color = Color.White)
+                    }
+                }
+
+                if (showPromptPanel) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        elevation = 8.dp
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                "AI Evaluation Prompt",
+                                style = MaterialTheme.typography.h6,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+
+                            OutlinedTextField(
+                                value = currentPrompt,
+                                onValueChange = { currentPrompt = it },
+                                modifier = Modifier.fillMaxWidth().height(200.dp),
+                                label = { Text("Edit the prompt that will be sent to AI") }
+                            )
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                Button(
+                                    onClick = { showPromptPanel = false },
+                                    modifier = Modifier.padding(end = 8.dp)
+                                ) {
+                                    Text("Cancel")
+                                }
+
+                                Button(
+                                    onClick = {
+                                        finalPrompt = currentPrompt
+                                        showPromptPanel = false
+                                        isLoading = true
+
+                                        evaluateAnswerSheet(
+                                            answerSheet = readFileContent(
+                                                selectedFiles["Answer Sheet"] ?: ""
+                                            ),
+                                            rubric = readFileContent(selectedFiles["Rubric"] ?: ""),
+                                            prompt = currentPrompt, // Pass the custom prompt
+                                            selectedFiles = selectedFiles
+                                        ) { result ->
+                                            feedbackContent = result
+                                            isLoading = false
+                                        }
+                                    }
+                                ) {
+                                    Text("Evaluate with This Prompt")
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -173,78 +259,241 @@ fun DesktopApp(
                     confirmButton = { Button(onClick = { showDialog = false }) { Text("Close") } }
                 )
             }
-
+            // left panel
             Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),  // ✅ Remove extreme height value
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Card(
-                    modifier = Modifier.weight(1f).fillMaxSize(),
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = 4.dp
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())
-                    ) {
-                        Text(
-                            "Student Report",
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
+                    val scrollState = rememberScrollState()
+
+                    Box(Modifier.fillMaxSize()) {
+                        Column(
+                            modifier = Modifier
+                                .verticalScroll(scrollState)
+                                .padding(16.dp)
+                                .heightIn(max = 600.dp)  // ✅ Set a reasonable max height
+                        ) {
+                            Text(
+                                "Student Report",
+                                fontSize = 16.sp,
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = fileContent,
+                                fontSize = 14.sp,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        // ✅ Vertical Scrollbar - Works properly now
+                        VerticalScrollbar(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .fillMaxHeight(),
+                            adapter = rememberScrollbarAdapter(scrollState)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(fileContent, fontSize = 14.sp)
                     }
                 }
-
-//                Column(modifier = Modifier.padding(16.dp)) {
-                Card(
-                    modifier = Modifier.weight(1f).fillMaxSize(),
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = 4.dp
+                // Right Panel Area
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())
+                    // PROMPT BOX (added above the right panel)
+                    if (finalPrompt != null) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp),
+                            elevation = 4.dp,
+                            backgroundColor = Color(0xFFE3F2FD) // Light blue background
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        "Evaluation Prompt",
+                                        style = MaterialTheme.typography.subtitle1,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    IconButton(
+                                        onClick = {
+                                            showPromptPanel = true
+                                            currentPrompt = finalPrompt ?: ""
+                                        },
+                                        modifier = Modifier.size(24.dp)
+                                    ) {
+                                        Icon(Icons.Default.Edit, "Edit Prompt")
+                                    }
+                                }
+                                Text(
+                                    finalPrompt!!,
+                                    modifier = Modifier.padding(top = 8.dp),
+                                    fontSize = 14.sp,
+                                    maxLines = 3,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+                    }
+
+                    // RIGHT PANEL (AI Evaluation Only)
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        elevation = 4.dp
                     ) {
-                        Text(
-                            "AI Score & Feedback",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
-                        )
+                        Box(Modifier.fillMaxSize()) {
+                            val scrollState = rememberScrollState()
 
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        if (feedbackContent == null) {
-                            CircularProgressIndicator() // Show loading indicator
-                        } else {
-                            // Parse JSON before UI rendering
-                            val jsonResponse = try {
-                                JSONObject(feedbackContent ?: "{}") // Avoid null exceptions
-                            } catch (e: Exception) {
-                                null // Return null if parsing fails
+                            Column(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .verticalScroll(scrollState)
+                            ) {
+                                if (isLoading) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator()
+                                    }
+                                } else if (feedbackContent != null) {
+                                    Text(
+                                        "AI Evaluation",
+                                        style = MaterialTheme.typography.h6,
+                                        modifier = Modifier.padding(bottom = 8.dp)
+                                    )
+                                    DisplayFeedback(JSONObject(feedbackContent!!))
+                                }
                             }
 
-                            if (jsonResponse != null) {
-                                DisplayFeedback(jsonResponse) // ✅ Safe to call composable
-                            } else {
-                                Text(text = "Error: Could not parse response.") // ✅ UI remains valid
-                            }
-
+                            VerticalScrollbar(
+                                modifier = Modifier
+                                    .align(Alignment.CenterEnd)
+                                    .fillMaxHeight(),
+                                adapter = rememberScrollbarAdapter(scrollState)
+                            )
                         }
                     }
                 }
             }
-//                Card(modifier = Modifier.weight(1f).fillMaxSize(), shape = RoundedCornerShape(8.dp), elevation = 4.dp) {
-//                    Column(modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
-//                        Text("AI Score & Feedback", fontSize = 16.sp, color = Color.Black, fontWeight = FontWeight.Bold)
-//                        Spacer(modifier = Modifier.height(8.dp))
-//                        Text(feedbackContent, fontSize = 14.sp)
-//                    }
-//                }
         }
     }
 }
 
+
+fun evaluateCustomPrompt(
+    prompt: String,
+    answerSheet: String,
+    rubric: String,
+    onResult: (String) -> Unit
+) {
+    val client = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .build()
+
+    val apiKey =
+        "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc" // Use environment variable in production!
+    val url =
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey"
+
+    val requestBody = JSONObject().apply {
+        put("contents", JSONArray().apply {
+            put(JSONObject().apply {
+                put("parts", JSONArray().apply {
+                    put(JSONObject().apply {
+                        put(
+                            "text", """
+                            CUSTOM PROMPT: $prompt
+                            
+                            RUBRIC CONTEXT:
+                            ${rubric.take(10000)}
+                            
+                            ANSWER SHEET:
+                            ${answerSheet.take(50000)}
+                            
+                            RESPONSE FORMAT: Plain text analysis (no JSON required)
+                        """.trimIndent()
+                        )
+                    })
+                })
+            })
+        })
+    }.toString()
+
+    val request = Request.Builder()
+        .url(url)
+        .post(requestBody.toRequestBody("application/json".toMediaType()))
+        .build()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            onResult("Error: ${e.message}")
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val responseBody = response.body?.string() ?: ""
+            try {
+                val jsonResponse = JSONObject(responseBody)
+                val text = jsonResponse
+                    .getJSONArray("candidates")
+                    .getJSONObject(0)
+                    .getJSONObject("content")
+                    .getJSONArray("parts")
+                    .getJSONObject(0)
+                    .getString("text")
+                onResult(text)
+            } catch (e: Exception) {
+                onResult("Failed to parse response: ${e.message}\n\nRaw: ${responseBody.take(500)}")
+            }
+        }
+    })
+}
+
+@Composable
+fun PromptInputPanel(
+    onSendPrompt: (String) -> Unit
+) {
+    var promptText by remember { mutableStateOf("") }
+
+    Column(Modifier.padding(16.dp)) {
+        OutlinedTextField(
+            value = promptText,
+            onValueChange = { promptText = it },
+            label = { Text("Custom Prompt for Gemini") },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("e.g., 'Analyze this answer sheet focusing on...'") }
+        )
+
+        Button(
+            onClick = {
+                if (promptText.isNotBlank()) {
+                    onSendPrompt(promptText)
+                    promptText = ""
+                }
+            },
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text("Send Custom Prompt")
+        }
+    }
+}
 
 @Composable
 fun DisplayFeedback(jsonResponse: JSONObject) {
@@ -348,6 +597,7 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
 fun evaluateAnswerSheet(
     answerSheet: String,
     rubric: String,
+    prompt: String,
     selectedFiles: Map<String, String>,
     onResult: (String) -> Unit
 ) {
