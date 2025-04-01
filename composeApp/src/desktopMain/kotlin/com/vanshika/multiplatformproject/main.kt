@@ -69,14 +69,25 @@ fun DesktopApp(
     var selectedFiles by remember { mutableStateOf(mapOf<String, String>()) }
     var showDialog by remember { mutableStateOf(false) }
     var fileContent by remember { mutableStateOf("") }
-//    var feedbackContent by remember { mutableStateOf("") }
-    var customPromptResponse by remember { mutableStateOf<String?>(null) }
+    var currentPrompt by remember { mutableStateOf("Evaluate this answer sheet against the provided rubric") }
+//    var customPromptResponse by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var feedbackContent by remember { mutableStateOf<String?>(null) }
-
+    val BRIEF_PROMPT_PREVIEW = "Evaluate answer sheet against rubric and provide detailed feedback"
+    val FULL_PROMPT_TEMPLATE = """
+    Evaluate this answer sheet against the provided rubric and provide detailed feedback with scores.
+    
+    RUBRIC:
+    %RUBRIC%
+    
+    ANSWER SHEET:
+    %ANSWER_SHEET%
+    
+    Provide specific feedback with improvement suggestions.
+"""
     // New states for prompt management
     var showPromptPanel by remember { mutableStateOf(false) }
-    var currentPrompt by remember { mutableStateOf("") }
+//    var currentPrompt by remember { mutableStateOf("") }
     var finalPrompt by remember { mutableStateOf<String?>(null) }
 
 //    LaunchedEffect(Unit) {
@@ -108,7 +119,9 @@ fun DesktopApp(
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .padding(vertical = 8.dp),
+//            verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 listOf("Rubric", "Exam Paper", "Answer Sheet").forEach { label ->
@@ -122,7 +135,8 @@ fun DesktopApp(
                                 }
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6200EA))
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6200EA)),
+//                        modifier = Modifier.height(48.dp) // Correct modifier syntax
                     ) {
                         Text(text = label, color = Color.White)
                     }
@@ -141,29 +155,23 @@ fun DesktopApp(
                         val question = readFileContent(selectedFiles["Exam Paper"] ?: "")
                         val rubric = readFileContent(selectedFiles["Rubric"] ?: "")
                         showPromptPanel = true
-
-//                        evaluateAnswerSheet(
-//                            answerSheet = answer,
-//                            rubric = rubric,
-//                            selectedFiles = selectedFiles  // Pass the map here
-//                        ) { result ->
-//                            feedbackContent = result
-//                        }
                         // Generate initial prompt
                         currentPrompt = """
-                    Evaluate this answer sheet against the provided rubric:
-                    
+                    "Evaluate this answer sheet against the provided rubric and provide detailed feedback with scores."
                     RUBRIC:
                     ${readFileContent(selectedFiles["Rubric"] ?: "").take(10000)}
-                    
+
                     ANSWER SHEET:
                     ${readFileContent(selectedFiles["Answer Sheet"] ?: "").take(50000)}
-                    
-                    Provide detailed feedback with scores.
-                    """.trimIndent()
 
-                    }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000)),
-                    enabled = !isLoading && selectedFiles.contains("Answer Sheet") && selectedFiles.contains(
+                    Provide detailed feedback with scores.
+                    ""${'"'}.trimIndent()
+
+                    """ },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000)),
+                    modifier = Modifier.height(48.dp),
+                    enabled =
+                    !isLoading && selectedFiles.contains("Answer Sheet") && selectedFiles.contains(
                         "Rubric"
                     )
                 ) {
@@ -182,7 +190,8 @@ fun DesktopApp(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(8.dp)
+                            .height(200.dp),  // Fixed height for prompt panel
                         elevation = 8.dp
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -195,7 +204,8 @@ fun DesktopApp(
                             OutlinedTextField(
                                 value = currentPrompt,
                                 onValueChange = { currentPrompt = it },
-                                modifier = Modifier.fillMaxWidth().height(200.dp),
+                                modifier = Modifier.fillMaxWidth().height(200.dp)
+                                    .weight(1f),  // Takes remaining space,
                                 label = { Text("Edit the prompt that will be sent to AI") }
                             )
 
@@ -220,7 +230,9 @@ fun DesktopApp(
                                             answerSheet = readFileContent(
                                                 selectedFiles["Answer Sheet"] ?: ""
                                             ),
-                                            rubric = readFileContent(selectedFiles["Rubric"] ?: ""),
+                                            rubric = readFileContent(
+                                                selectedFiles["Rubric"] ?: ""
+                                            ),
                                             prompt = currentPrompt, // Pass the custom prompt
                                             selectedFiles = selectedFiles
                                         ) { result ->
@@ -256,7 +268,11 @@ fun DesktopApp(
                             }
                         }
                     },
-                    confirmButton = { Button(onClick = { showDialog = false }) { Text("Close") } }
+                    confirmButton = {
+                        Button(onClick = {
+                            showDialog = false
+                        }) { Text("Close") }
+                    }
                 )
             }
             // left panel
@@ -522,7 +538,7 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        Text("⚠️ Improvement Areas:", fontWeight = FontWeight.Bold)
+        Text("⚠ Improvement Areas:", fontWeight = FontWeight.Bold)
         jsonResponse.optJSONArray("improvement_areas")?.let {
             for (i in 0 until it.length()) {
                 Text("- ${it.getString(i)}", color = Color.Red)
