@@ -49,6 +49,10 @@ import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import net.sourceforge.tess4j.Tesseract
 import net.sourceforge.tess4j.TesseractException
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.v2.ScrollbarAdapter
 
 fun main() = application {
     val answer = "Student's Answer Here"
@@ -69,25 +73,14 @@ fun DesktopApp(
     var selectedFiles by remember { mutableStateOf(mapOf<String, String>()) }
     var showDialog by remember { mutableStateOf(false) }
     var fileContent by remember { mutableStateOf("") }
-    var currentPrompt by remember { mutableStateOf("Evaluate this answer sheet against the provided rubric") }
-//    var customPromptResponse by remember { mutableStateOf<String?>(null) }
+//    var feedbackContent by remember { mutableStateOf("") }
+    var customPromptResponse by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var feedbackContent by remember { mutableStateOf<String?>(null) }
-    val BRIEF_PROMPT_PREVIEW = "Evaluate answer sheet against rubric and provide detailed feedback"
-    val FULL_PROMPT_TEMPLATE = """
-    Evaluate this answer sheet against the provided rubric and provide detailed feedback with scores.
-    
-    RUBRIC:
-    %RUBRIC%
-    
-    ANSWER SHEET:
-    %ANSWER_SHEET%
-    
-    Provide specific feedback with improvement suggestions.
-"""
+
     // New states for prompt management
     var showPromptPanel by remember { mutableStateOf(false) }
-//    var currentPrompt by remember { mutableStateOf("") }
+    var currentPrompt by remember { mutableStateOf("") }
     var finalPrompt by remember { mutableStateOf<String?>(null) }
 
 //    LaunchedEffect(Unit) {
@@ -119,9 +112,7 @@ fun DesktopApp(
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(vertical = 8.dp),
-//            verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 listOf("Rubric", "Exam Paper", "Answer Sheet").forEach { label ->
@@ -135,8 +126,7 @@ fun DesktopApp(
                                 }
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6200EA)),
-//                        modifier = Modifier.height(48.dp) // Correct modifier syntax
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6200EA))
                     ) {
                         Text(text = label, color = Color.White)
                     }
@@ -155,23 +145,29 @@ fun DesktopApp(
                         val question = readFileContent(selectedFiles["Exam Paper"] ?: "")
                         val rubric = readFileContent(selectedFiles["Rubric"] ?: "")
                         showPromptPanel = true
+
+//                        evaluateAnswerSheet(
+//                            answerSheet = answer,
+//                            rubric = rubric,
+//                            selectedFiles = selectedFiles  // Pass the map here
+//                        ) { result ->
+//                            feedbackContent = result
+//                        }
                         // Generate initial prompt
                         currentPrompt = """
-                    "Evaluate this answer sheet against the provided rubric and provide detailed feedback with scores."
-                    RUBRIC:
-                    ${readFileContent(selectedFiles["Rubric"] ?: "").take(10000)}
-
-                    ANSWER SHEET:
-                    ${readFileContent(selectedFiles["Answer Sheet"] ?: "").take(50000)}
-
+                    Evaluate this answer sheet against the provided rubric:
+                    
+//                    RUBRIC:
+//                    ${readFileContent(selectedFiles["Rubric"] ?: "").take(10000)}
+//                    
+//                    ANSWER SHEET:
+//                    ${readFileContent(selectedFiles["Answer Sheet"] ?: "").take(50000)}
+                    
                     Provide detailed feedback with scores.
-                    ""${'"'}.trimIndent()
+                    """.trimIndent()
 
-                    """ },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000)),
-                    modifier = Modifier.height(48.dp),
-                    enabled =
-                    !isLoading && selectedFiles.contains("Answer Sheet") && selectedFiles.contains(
+                    }, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000)),
+                    enabled = !isLoading && selectedFiles.contains("Answer Sheet") && selectedFiles.contains(
                         "Rubric"
                     )
                 ) {
@@ -190,8 +186,7 @@ fun DesktopApp(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
-                            .height(200.dp),  // Fixed height for prompt panel
+                            .padding(8.dp),
                         elevation = 8.dp
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -204,8 +199,7 @@ fun DesktopApp(
                             OutlinedTextField(
                                 value = currentPrompt,
                                 onValueChange = { currentPrompt = it },
-                                modifier = Modifier.fillMaxWidth().height(200.dp)
-                                    .weight(1f),  // Takes remaining space,
+                                modifier = Modifier.fillMaxWidth().height(200.dp),
                                 label = { Text("Edit the prompt that will be sent to AI") }
                             )
 
@@ -230,9 +224,8 @@ fun DesktopApp(
                                             answerSheet = readFileContent(
                                                 selectedFiles["Answer Sheet"] ?: ""
                                             ),
-                                            rubric = readFileContent(
-                                                selectedFiles["Rubric"] ?: ""
-                                            ),
+                                            rubric = readFileContent(selectedFiles["Rubric"] ?: ""),
+                                            questionPaper = readFileContent(selectedFiles["Question Paper"] ?: ""),
                                             prompt = currentPrompt, // Pass the custom prompt
                                             selectedFiles = selectedFiles
                                         ) { result ->
@@ -268,11 +261,7 @@ fun DesktopApp(
                             }
                         }
                     },
-                    confirmButton = {
-                        Button(onClick = {
-                            showDialog = false
-                        }) { Text("Close") }
-                    }
+                    confirmButton = { Button(onClick = { showDialog = false }) { Text("Close") } }
                 )
             }
             // left panel
@@ -294,7 +283,7 @@ fun DesktopApp(
                             modifier = Modifier
                                 .verticalScroll(scrollState)
                                 .padding(16.dp)
-                                .heightIn(max = 600.dp)  // ✅ Set a reasonable max height
+                                .fillMaxWidth()  // ✅ Set a reasonable max height
                         ) {
                             Text(
                                 "Student Report",
@@ -325,48 +314,59 @@ fun DesktopApp(
                         .weight(1f)
                         .fillMaxHeight()
                 ) {
-                    // PROMPT BOX (added above the right panel)
+                    // PROMPT BOX - Now scrollable
                     if (finalPrompt != null) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp),
+                                .padding(bottom = 16.dp)
+                                .heightIn(max = 200.dp), // Constrain max height
                             elevation = 4.dp,
-                            backgroundColor = Color(0xFFE3F2FD) // Light blue background
+                            backgroundColor = Color(0xFFE3F2FD)
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier.fillMaxWidth()
+                            val promptScrollState = rememberScrollState()
+                            Box(Modifier.fillMaxSize()) {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(16.dp)
+                                        .verticalScroll(promptScrollState)
                                 ) {
-                                    Text(
-                                        "Evaluation Prompt",
-                                        style = MaterialTheme.typography.subtitle1,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    IconButton(
-                                        onClick = {
-                                            showPromptPanel = true
-                                            currentPrompt = finalPrompt ?: ""
-                                        },
-                                        modifier = Modifier.size(24.dp)
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier.fillMaxWidth()
                                     ) {
-                                        Icon(Icons.Default.Edit, "Edit Prompt")
+                                        Text(
+                                            "Evaluation Prompt",
+                                            style = MaterialTheme.typography.subtitle1,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        IconButton(
+                                            onClick = {
+                                                showPromptPanel = true
+                                                currentPrompt = finalPrompt ?: ""
+                                            },
+                                            modifier = Modifier.size(24.dp)
+                                        ) {
+                                            Icon(Icons.Default.Edit, "Edit Prompt")
+                                        }
                                     }
+                                    Text(
+                                        finalPrompt!!,
+                                        modifier = Modifier.padding(top = 8.dp),
+                                        fontSize = 14.sp
+                                        // Removed maxLines and overflow since we're scrolling now
+                                    )
                                 }
-                                Text(
-                                    finalPrompt!!,
-                                    modifier = Modifier.padding(top = 8.dp),
-                                    fontSize = 14.sp,
-                                    maxLines = 3,
-                                    overflow = TextOverflow.Ellipsis
+                                VerticalScrollbar(
+                                    modifier = Modifier.align(Alignment.CenterEnd),
+                                    adapter = rememberScrollbarAdapter(promptScrollState)
                                 )
                             }
                         }
                     }
 
-                    // RIGHT PANEL (AI Evaluation Only)
+                    // RIGHT PANEL (AI Evaluation) with LazyColumn
                     Card(
                         modifier = Modifier
                             .weight(1f)
@@ -374,36 +374,35 @@ fun DesktopApp(
                         elevation = 4.dp
                     ) {
                         Box(Modifier.fillMaxSize()) {
-                            val scrollState = rememberScrollState()
-
-                            Column(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .verticalScroll(scrollState)
-                            ) {
-                                if (isLoading) {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator()
-                                    }
-                                } else if (feedbackContent != null) {
-                                    Text(
-                                        "AI Evaluation",
-                                        style = MaterialTheme.typography.h6,
-                                        modifier = Modifier.padding(bottom = 8.dp)
-                                    )
-                                    DisplayFeedback(JSONObject(feedbackContent!!))
+                            if (isLoading) {
+                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    CircularProgressIndicator()
                                 }
-                            }
+                            } else if (feedbackContent != null) {
+                                val scrollState = rememberLazyListState()
 
-                            VerticalScrollbar(
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .fillMaxHeight(),
-                                adapter = rememberScrollbarAdapter(scrollState)
-                            )
+                                LazyColumn(
+                                    state = scrollState,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentPadding = PaddingValues(16.dp)
+                                ) {
+                                    item {
+                                        Text(
+                                            "AI Evaluation",
+                                            style = MaterialTheme.typography.h6,
+                                            modifier = Modifier.padding(bottom = 16.dp)
+                                        )
+                                    }
+                                    item {
+                                        DisplayFeedback(JSONObject(feedbackContent!!))
+                                    }
+                                }
+
+                                VerticalScrollbar(
+                                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                                    adapter = rememberScrollbarAdapter(scrollState) // Direct usage
+                                )
+                            }
                         }
                     }
                 }
@@ -512,6 +511,96 @@ fun PromptInputPanel(
 }
 
 @Composable
+fun DisplayFeedbackLazy(
+    jsonResponse: JSONObject,
+    modifier: Modifier = Modifier
+) {
+    var adjustedScore by remember {
+        mutableStateOf(
+            jsonResponse.optDouble("overall_score").takeIf { !it.isNaN() }?.toFloat() ?: 0f
+        )
+    }
+
+    Column(modifier = modifier) {
+        // Overall Score
+        Text(
+            "🔢 Overall Score: ${jsonResponse.optString("overall_score")}",
+            fontSize = 18.sp,
+            color = Color.Blue
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Strengths
+        Text("✅ Strengths:", fontWeight = FontWeight.Bold)
+        jsonResponse.optJSONArray("strengths")?.let { strengths ->
+            strengths.forEachIndexed { index, _ ->
+                Text("- ${strengths.getString(index)}")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Improvement Areas
+        Text("⚠️ Improvement Areas:", fontWeight = FontWeight.Bold)
+        jsonResponse.optJSONArray("improvement_areas")?.let { areas ->
+            areas.forEachIndexed { index, _ ->
+                Text("- ${areas.getString(index)}", color = Color.Red)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Score Adjustment
+        Column {
+            Text(
+                "🔢 Adjusted Score: ${"%.1f".format(adjustedScore)}",
+                fontSize = 18.sp,
+                color = Color.Blue
+            )
+            Slider(
+                value = adjustedScore,
+                onValueChange = { adjustedScore = it },
+                valueRange = 0f..100f,
+                steps = 99,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Button(
+                onClick = { /* Save adjusted score */ },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text("Confirm Score")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Section-wise feedback
+        jsonResponse.optJSONArray("section_wise")?.let { sections ->
+            sections.forEachIndexed { i, _ ->
+                val section = sections.getJSONObject(i)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    "📌 Section: ${section.getString("section")}",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Text("📊 Score: ${section.getString("section_score")}", color = Color.Magenta)
+
+                section.optJSONArray("criteria")?.let { criteria ->
+                    criteria.forEachIndexed { j, _ ->
+                        val crit = criteria.getJSONObject(j)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("🔹 ${crit.getString("criterion")}: ${crit.getString("score")}")
+                        Text("   - ${crit.getString("feedback")}")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun DisplayFeedback(jsonResponse: JSONObject) {
     // Ensure we are not using NaN, defaulting to 0 if invalid
     var adjustedScore by remember {
@@ -538,7 +627,7 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        Text("⚠ Improvement Areas:", fontWeight = FontWeight.Bold)
+        Text("⚠️ Improvement Areas:", fontWeight = FontWeight.Bold)
         jsonResponse.optJSONArray("improvement_areas")?.let {
             for (i in 0 until it.length()) {
                 Text("- ${it.getString(i)}", color = Color.Red)
@@ -613,6 +702,7 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
 fun evaluateAnswerSheet(
     answerSheet: String,
     rubric: String,
+    questionPaper: String,  // Added question paper parameter
     prompt: String,
     selectedFiles: Map<String, String>,
     onResult: (String) -> Unit
@@ -628,56 +718,79 @@ fun evaluateAnswerSheet(
         .readTimeout(60, TimeUnit.SECONDS)
         .build()
 
-    val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc" // Verify this key is valid
+    val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc"
     val url =
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
-    // Truncate inputs to reasonable lengths (though 1.5 Pro supports up to 2M tokens)
-    val truncatedRubric = parsedRubric.take(100000) // ~100k characters
-    val truncatedAnswer = answerSheet.take(500000) // ~500k characters
+
+    // Truncate inputs
+    val truncatedRubric = parsedRubric.take(100000)
+    val truncatedAnswer = answerSheet.take(500000)
+    val truncatedQuestions = questionPaper.take(100000)  // Added question paper truncation
 
     val prompt = """
-    ROLE: Expert academic evaluator analyzing Excel-based rubrics
+    ROLE: Expert academic evaluator analyzing answer sheets against questions and rubrics
     
     TASK:
-    1. Parse the tabular rubric data
-    2. Extract evaluation criteria and scoring guidelines
-    3. Evaluate answer against each criterion
+    1. Review the question paper to understand what was asked
+    2. Parse the tabular rubric data
+    3. Evaluate answer against both the question requirements and rubric criteria
     4. Return JSON response with scores
     
+    QUESTION PAPER:
+    ${if (questionPaper.isBlank()) "NOT PROVIDED" else truncatedQuestions}
+    
     RUBRIC:
-        ${if (truncatedRubric.startsWith("ERROR")) "INVALID RUBRIC FORMAT" else truncatedRubric}
+    ${if (truncatedRubric.startsWith("ERROR")) "INVALID RUBRIC FORMAT" else truncatedRubric}
         
-        STUDENT ANSWER:
-        $truncatedAnswer
+    STUDENT ANSWER:
+    $truncatedAnswer
         
     RESPONSE FORMAT:
     {
         "overall_score": "X/100",
+        "question_accuracy": "X% (answers correctly addressing questions)",
         "section_wise": [
             {
                 "section": "Section Name",
-                "criteria": [
+                "questions": [
                     {
-                        "criterion": "Criterion Name",
-                        "score": "X/Y",
-                        "feedback": "Specific comments",
-                        "achieved_level": "Excellent/Good/Fair/Needs improvement"
+                        "question_id": "Q1",
+                        "question_text": "...",
+                        "answer_relevance": "Fully/Partially/Not addressed",
+                        "criteria": [
+                            {
+                                "criterion": "Criterion Name",
+                                "score": "X/Y",
+                                "feedback": "Specific comments",
+                                "achieved_level": "Excellent/Good/Fair/Needs improvement"
+                            }
+                        ]
                     }
                 ],
                 "section_score": "X/Y"
             }
         ],
         "strengths": [],
-        "improvement_areas": []
+        "improvement_areas": [],
+        "answer_quality": {
+            "completeness": "X%",
+            "accuracy": "X%",
+            "relevance": "X%"
+        }
     }
     
-    INSTRUCTIONS:
-    - Match answer content to rubric levels
-    - Assign scores based on achieved level
-    - Provide detailed feedback for each criterion
-    - Convert all rubric percentages to scores
+    EVALUATION INSTRUCTIONS:
+    1. FIRST verify if the answer actually addresses the question asked
+    2. THEN evaluate against rubric criteria
+    3. Flag answers that don't match questions
+    4. Provide separate metrics for:
+       - Question relevance (does it answer what was asked?)
+       - Rubric compliance (how well it meets grading criteria)
+    5. Convert all percentages to scores
+    6. For answers not matching questions, suggest what was actually asked
 """.trimIndent()
 
+    // Rest of the function remains the same...
     val requestBody = JSONObject().apply {
         put("contents", JSONArray().apply {
             put(JSONObject().apply {
@@ -689,7 +802,7 @@ fun evaluateAnswerSheet(
             })
         })
         put("generationConfig", JSONObject().apply {
-            put("temperature", 0.3) // Lower for consistent scoring
+            put("temperature", 0.3)
             put("topP", 0.8)
             put("topK", 40)
             put("maxOutputTokens", 4096)
@@ -722,14 +835,12 @@ fun evaluateAnswerSheet(
             try {
                 val jsonResponse = JSONObject(responseBody)
 
-                // Handle API errors
                 if (jsonResponse.has("error")) {
                     val error = jsonResponse.getJSONObject("error")
                     onResult("API Error (${error.optInt("code")}): ${error.getString("message")}")
                     return
                 }
 
-                // Parse successful response
                 val candidates = jsonResponse.optJSONArray("candidates") ?: JSONArray()
                 if (candidates.length() == 0) {
                     onResult("Error: No evaluation returned from API")
@@ -745,12 +856,10 @@ fun evaluateAnswerSheet(
 
                 val text = parts.getJSONObject(0).getString("text")
 
-                // Try to pretty-print the JSON
                 try {
                     val json = JSONObject(text)
                     onResult(json.toString(4))
                 } catch (e: Exception) {
-                    // If not valid JSON, return as-is with note
                     onResult("Received non-JSON response:\n$text")
                 }
 
@@ -939,5 +1048,27 @@ fun runTesseractOCR(imageFile: File): String {
     } catch (e: TesseractException) {
         println("OCR Error: ${e.message}")
         "OCR_FAILED"
+    }
+}
+
+@Composable
+fun rememberLazyListScrollAdapter(
+    scrollState: LazyListState
+): ScrollbarAdapter {
+    return remember(scrollState) {
+        object : ScrollbarAdapter {
+            override val scrollOffset: Double
+                get() = scrollState.firstVisibleItemScrollOffset.toDouble()
+
+            override val contentSize: Double
+                get() = scrollState.layoutInfo.totalItemsCount.toDouble()
+
+            override val viewportSize: Double
+                get() = scrollState.layoutInfo.visibleItemsInfo.size.toDouble()
+
+            override suspend fun scrollTo(scrollOffset: Double) {
+                scrollState.scrollToItem(scrollOffset.toInt())
+            }
+        }
     }
 }
