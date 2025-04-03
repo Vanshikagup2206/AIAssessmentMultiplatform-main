@@ -12,6 +12,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -151,9 +153,6 @@ fun DesktopApp(
 
                 Button(
                     onClick = {
-                        val answer = readFileContent(selectedFiles["Answer Sheet"] ?: "")
-                        val question = readFileContent(selectedFiles["Exam Paper"] ?: "")
-                        val rubric = readFileContent(selectedFiles["Rubric"] ?: "")
                         showPromptPanel = true
                         // Generate initial prompt
                         currentPrompt = """
@@ -163,6 +162,9 @@ fun DesktopApp(
 
                     ANSWER SHEET:
                     ${readFileContent(selectedFiles["Answer Sheet"] ?: "").take(50000)}
+                    
+                    QUESTION PAPER:
+                    ${readFileContent(selectedFiles["Exam Paper"] ?: "").take(50000)}
 
                     Provide detailed feedback with scores.
                     ""${'"'}.trimIndent()
@@ -172,8 +174,7 @@ fun DesktopApp(
                     modifier = Modifier.height(48.dp),
                     enabled =
                     !isLoading && selectedFiles.contains("Answer Sheet") && selectedFiles.contains(
-                        "Rubric"
-                    )
+                        "Rubric")&& selectedFiles.contains("Exam Paper")
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
@@ -187,6 +188,7 @@ fun DesktopApp(
                 }
 
                 if (showPromptPanel) {
+
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -288,7 +290,8 @@ fun DesktopApp(
                 Card(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight()
+                        .fillMaxHeight(),
+                            backgroundColor = Color.White
                 ) {
                     val scrollState = rememberScrollState()
 
@@ -415,19 +418,10 @@ fun DesktopApp(
         }
     }
 }
-
 @Composable
 fun DisplayFeedback(jsonResponse: JSONObject) {
-    // Ensure we are not using NaN, defaulting to 0 if invalid
-    var adjustedScore by remember {
-        mutableStateOf(
-            jsonResponse.optDouble("overall_score").takeIf { !it.isNaN() }?.toFloat() ?: 0f
-        )
-    }
-    var showToast by remember { mutableStateOf(false) } // State for triggering toast
-
     Column(modifier = Modifier.padding(16.dp)) {
-
+        // Overall Score Section
         Text(
             "🔢 Overall Score: ${jsonResponse.optString("overall_score")}",
             fontSize = 18.sp,
@@ -449,70 +443,113 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
                 Text("- ${it.getString(i)}", color = Color.Red)
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
 
-        // Slider for adjusting the overall score
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                "🔢 Overall Score: ${String.format("%.1f", adjustedScore)}",
-                fontSize = 18.sp,
-                color = Color.Blue
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Slider for adjusting the overall score
-            Text("🎛 Adjust Final Score")
-            Slider(
-                value = adjustedScore,
-                onValueChange = { adjustedScore = it },
-                valueRange = 0f..100f,  // Assuming 0 to 100 scale
-                steps = 99,  // Defines step intervals for smooth adjustment
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Confirm button
-            Button(
-                onClick = {
-                    println("Confirmed Score: $adjustedScore")
-                },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text("Confirm Score")
-            }
-        }
+        // Section-wise Feedback
         jsonResponse.optJSONArray("section_wise")?.let { sections ->
             for (i in 0 until sections.length()) {
                 val section = sections.getJSONObject(i)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    "📌 Section: ${section.getString("section")}",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
+//                val initialScore = section.optDouble("section_score").takeIf { !it.isNaN() }?.toFloat() ?: 0f
 
-                Text("📊 Score: ${section.getString("section_score")}", color = Color.Magenta)
+                // State for editable score
+//                var sectionScore by remember { mutableStateOf(initialScore) }
+                var isEditing by remember { mutableStateOf(false) }
 
-                section.optJSONArray("criteria")?.let { criteria ->
-                    for (j in 0 until criteria.length()) {
-                        val crit = criteria.getJSONObject(j)
-                        Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        // Section Header
                         Text(
-                            "🔹 ${crit.getString("criterion")}: ${crit.getString("score")} (${
-                                crit.getString(
-                                    "achieved_level"
-                                )
-                            })"
+                            "📌 Section: ${section.getString("section")}",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
                         )
-                        Text("   - ${crit.getString("feedback")}")
+
+                        // Criteria feedback
+                        section.optJSONArray("criteria")?.let { criteria ->
+                            for (j in 0 until criteria.length()) {
+                                val crit = criteria.getJSONObject(j)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    "🔹 ${crit.getString("criterion")}: ${crit.getString("score")} (${
+                                        crit.getString("achieved_level")
+                                    })",
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text("   - ${crit.getString("feedback")}")
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Score display and slider section
+                        Text(
+                            "📊 Score: ${section.getString("section_score")}",color = Color.Magenta,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        var sectionScore by remember {
+                            mutableStateOf(
+                                section.optDouble("section_score").takeIf { !it.isNaN() }?.toFloat() ?: 0f
+                            )
+                        }
+                        // Slider with edit/confirm buttons
+                        Slider(
+                            value = sectionScore,
+                            onValueChange = { sectionScore = it },
+                            valueRange = 0f..10f,
+                            steps = 10,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            if (!isEditing) {
+                                Button(
+                                    onClick = { isEditing = true },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text("Edit")
+                                }
+                            } else {
+                                Button(
+                                    onClick = {
+                                        sectionScore = sectionScore
+                                        isEditing = false
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red.copy(alpha = 0.6f))
+                                ) {
+                                    Text("Cancel")
+                                }
+
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                Button(
+                                    onClick = {
+                                        // Here you would update the backend with sectionScore
+                                        isEditing = false
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green.copy(alpha = 0.6f))
+                                ) {
+                                    Text("Confirm")
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
     }
-
 }
 
 fun evaluateAnswerSheet(
@@ -552,9 +589,13 @@ fun evaluateAnswerSheet(
     2. Analyze the rubric to extract evaluation criteria and scoring guidelines.
     3. Evaluate the student’s answer based on both the question paper and the rubric.
     4. Provide a JSON response with detailed feedback, scores, strengths, and improvement areas.
-    
+//    5. Review the question paper to understand what was asked
+//    6. Parse the tabular rubric data
+//    7. Evaluate answer against both the question requirements and rubric criteria
+//    8. Return JSON response with scores
     QUESTION PAPER:
     $truncatedQuestionPaper
+    
     
     RUBRIC:
     ${if (truncatedRubric.startsWith("ERROR")) "INVALID RUBRIC FORMAT" else truncatedRubric}
