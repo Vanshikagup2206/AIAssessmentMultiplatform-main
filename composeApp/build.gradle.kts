@@ -75,6 +75,8 @@ kotlin {
             implementation("io.ktor:ktor-client-core:2.0.0") // HTTP client for API calls
             implementation("io.ktor:ktor-client-cio:2.0.0")
             implementation("com.squareup.okio:okio:3.2.0")
+            implementation("org.apache.tika:tika-core:2.9.1")
+            implementation("org.apache.tika:tika-parsers-standard-package:2.9.1")
         }
     }
 }
