@@ -50,6 +50,8 @@ import java.io.IOException
 import java.sql.DriverManager.println
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
+import androidx.compose.ui.window.Dialog
+
 import javax.swing.UIManager.put
 import org.apache.poi.ss.usermodel.*
 import java.io.*
@@ -185,59 +187,83 @@ fun DesktopApp(
                 }
 
                 if (showPromptPanel) {
-
-                    Card(
-                        modifier = Modifier.fillMaxWidth().padding(8.dp)
-                            .height(200.dp),  // Fixed height for prompt panel
-                        elevation = 8.dp
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                "AI Evaluation Prompt",
-                                style = MaterialTheme.typography.h6,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-
-                            OutlinedTextField(value = currentPrompt,
-                                onValueChange = { currentPrompt = it },
-                                modifier = Modifier.fillMaxWidth().height(200.dp)
-                                    .weight(1f),  // Takes remaining space,
-                                label = { Text("Edit the prompt that will be sent to AI") })
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
+                    Dialog(onDismissRequest = { showPromptPanel = false }) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(400.dp),  // Fixed height
+                            elevation = CardDefaults.cardElevation(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White) // ✅ White Card
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxSize()
                             ) {
-                                Button(
-                                    onClick = { showPromptPanel = false },
-                                    modifier = Modifier.padding(end = 8.dp)
+                                // 🔹 Blue Heading
+                                Text(
+                                    text = "✍ AI Evaluation Prompt",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Blue, // ✅ Blue color for heading
+                                    fontSize = 18.sp
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                // Scrolling inside TextField
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f)
+                                        .verticalScroll(rememberScrollState()) // Scroll only inside box
                                 ) {
-                                    Text("Cancel")
+                                    OutlinedTextField(
+                                        value = currentPrompt,
+                                        onValueChange = { currentPrompt = it },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp),  // Ensure TextField does not expand
+                                        label = { Text("Edit the evaluation prompt") },
+                                        maxLines = Int.MAX_VALUE
+                                    )
                                 }
 
-                                Button(onClick = {
-                                    finalPrompt = currentPrompt
-                                    showPromptPanel = false
-                                    isLoading = true
+                                Spacer(modifier = Modifier.height(16.dp))
 
-                                    evaluateAnswerSheet(
-                                        answerSheet = readFileContent(
-                                            selectedFiles["Answer Sheet"] ?: ""
-                                        ),
-                                        rubric = readFileContent(
-                                            selectedFiles["Rubric"] ?: ""
-                                        ),
-                                        questionPaper = readFileContent( // 🔹 Added question paper
-                                            selectedFiles["Question Paper"] ?: ""
-                                        ),
-                                        prompt = currentPrompt, // Pass the custom prompt
-                                        selectedFiles = selectedFiles
-                                    ) { result ->
-                                        feedbackContent = result
-                                        isLoading = false
+                                // Buttons
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End
+                                ) {
+                                    Button(onClick = { showPromptPanel = false }) {
+                                        Text("Cancel")
                                     }
-                                }) {
-                                    Text("Evaluate with This Prompt")
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Button(
+                                        onClick = {
+                                            finalPrompt = currentPrompt
+                                            showPromptPanel = false
+                                            isLoading = true
+                                            evaluateAnswerSheet(
+                                                answerSheet = readFileContent(
+                                                    selectedFiles["Answer Sheet"] ?: ""
+                                                ),
+                                                rubric = readFileContent(
+                                                    selectedFiles["Rubric"] ?: ""
+                                                ),
+                                                questionPaper = readFileContent( // 🔹 Added question paper
+                                                    selectedFiles["Question Paper"] ?: ""
+                                                ),
+                                                prompt = currentPrompt, // Pass the custom prompt
+                                                selectedFiles = selectedFiles
+                                            ) { result ->
+                                                feedbackContent = result
+                                                isLoading = false
+                                            }
+                                        }
+                                    ) {
+                                        Text("Evaluate with This Prompt")
+                                    }
                                 }
                             }
                         }
