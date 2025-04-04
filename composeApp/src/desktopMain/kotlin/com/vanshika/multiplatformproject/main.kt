@@ -1,9 +1,11 @@
 package com.vanshika.multiplatformproject
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.window.Dialog // This is crucial for Desktop
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
@@ -78,15 +80,11 @@ fun DesktopApp(
     val BRIEF_PROMPT_PREVIEW = "Evaluate answer sheet against rubric and provide detailed feedback"
     val FULL_PROMPT_TEMPLATE = """
     Evaluate this answer sheet against the provided rubric and provide detailed feedback with scores.
-    
     RUBRIC:
     %RUBRIC%
-    
     ANSWER SHEET:
     %ANSWER_SHEET%
-    
-    Provide specific feedback with improvement suggestions.
-"""
+     Provide specific feedback with improvement suggestions."""
     // New states for prompt management
     var showPromptPanel by remember { mutableStateOf(false) }
 //    var currentPrompt by remember { mutableStateOf("") }
@@ -169,12 +167,14 @@ fun DesktopApp(
                     Provide detailed feedback with scores.
                     ""${'"'}.trimIndent()
 
-                    """ },
+                    """
+                    },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF0000)),
                     modifier = Modifier.height(48.dp),
                     enabled =
                     !isLoading && selectedFiles.contains("Answer Sheet") && selectedFiles.contains(
-                        "Rubric")&& selectedFiles.contains("Exam Paper")
+                        "Rubric"
+                    ) && selectedFiles.contains("Exam Paper")
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
@@ -187,71 +187,75 @@ fun DesktopApp(
                     }
                 }
 
-                if (showPromptPanel) {
-
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .height(200.dp),  // Fixed height for prompt panel
-                        elevation = 8.dp
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                "AI Evaluation Prompt",
-                                style = MaterialTheme.typography.h6,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-
-                            OutlinedTextField(
-                                value = currentPrompt,
-                                onValueChange = { currentPrompt = it },
-                                modifier = Modifier.fillMaxWidth().height(200.dp)
-                                    .weight(1f),  // Takes remaining space,
-                                label = { Text("Edit the prompt that will be sent to AI") }
-                            )
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
+                  if (showPromptPanel) {
+                    Dialog(onDismissRequest = { showPromptPanel = false }) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(400.dp),  // Fixed height
+                            elevation = CardDefaults.cardElevation(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White) // ✅ White Card
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxSize()
                             ) {
-                                Button(
-                                    onClick = { showPromptPanel = false },
-                                    modifier = Modifier.padding(end = 8.dp)
+                                // 🔹 Blue Heading
+                                Text(
+                                    text = "✍️ AI Evaluation Prompt",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Blue, // ✅ Blue color for heading
+                                    fontSize = 18.sp
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                // Scrolling inside TextField
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f)
+                                        .verticalScroll(rememberScrollState()) // Scroll only inside box
                                 ) {
-                                    Text("Cancel")
+                                    OutlinedTextField(
+                                        value = currentPrompt,
+                                        onValueChange = { currentPrompt = it },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp),  // Ensure TextField does not expand
+                                        label = { Text("Edit the evaluation prompt") },
+                                        maxLines = Int.MAX_VALUE
+                                    )
                                 }
 
-                                Button(
-                                    onClick = {
-                                        finalPrompt = currentPrompt
-                                        showPromptPanel = false
-                                        isLoading = true
+                                Spacer(modifier = Modifier.height(16.dp))
 
-                                        evaluateAnswerSheet(
-                                            answerSheet = readFileContent(
-                                                selectedFiles["Answer Sheet"] ?: ""
-                                            ),
-                                            rubric = readFileContent(
-                                                selectedFiles["Rubric"] ?: ""
-                                            ),
-                                            questionPaper = readFileContent( // 🔹 Added question paper
-                                                selectedFiles["Question Paper"] ?: ""
-                                            ),
-                                            prompt = currentPrompt, // Pass the custom prompt
-                                            selectedFiles = selectedFiles
-                                        ) { result ->
-                                            feedbackContent = result
-                                            isLoading = false
-                                        }
-                                    }
+                                // Buttons
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End
                                 ) {
-                                    Text("Evaluate with This Prompt")
+                                    Button(onClick = { showPromptPanel = false }) {
+                                        Text("Cancel")
+                                    }
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Button(
+                                        onClick = {
+                                            finalPrompt = currentPrompt
+                                            showPromptPanel = false
+                                            isLoading = true
+                                        }
+                                    ) {
+                                        Text("Evaluate with This Prompt")
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
+
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -291,7 +295,7 @@ fun DesktopApp(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight(),
-                            backgroundColor = Color.White
+                    backgroundColor = Color.White
                 ) {
                     val scrollState = rememberScrollState()
 
@@ -418,6 +422,7 @@ fun DesktopApp(
         }
     }
 }
+
 @Composable
 fun DisplayFeedback(jsonResponse: JSONObject) {
     Column(modifier = Modifier.padding(16.dp)) {
@@ -489,12 +494,13 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
 
                         // Score display and slider section
                         Text(
-                            "📊 Score: ${section.getString("section_score")}",color = Color.Magenta,
+                            "📊 Score: ${section.getString("section_score")}", color = Color.Magenta,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         var sectionScore by remember {
                             mutableStateOf(
-                                section.optDouble("section_score").takeIf { !it.isNaN() }?.toFloat() ?: 0f
+                                section.optDouble("section_score").takeIf { !it.isNaN() }?.toFloat()
+                                    ?: 0f
                             )
                         }
                         // Slider with edit/confirm buttons
@@ -502,8 +508,12 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
                             value = sectionScore,
                             onValueChange = { sectionScore = it },
                             valueRange = 0f..10f,
-                            steps = 10,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = SliderDefaults.colors(
+                                thumbColor = Color(0xFF87CEEB), // Sky Blue
+                                activeTrackColor = Color(0xFF00BFFF), // Deep Sky Blue
+                                inactiveTrackColor = Color(0xFFADD8E6) // Light Blue
+                            )
                         )
 
                         Row(
@@ -526,7 +536,11 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
                                         isEditing = false
                                     },
                                     modifier = Modifier.weight(1f),
-                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red.copy(alpha = 0.6f))
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color.Red.copy(
+                                            alpha = 0.6f
+                                        )
+                                    )
                                 ) {
                                     Text("Cancel")
                                 }
@@ -539,7 +553,11 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
                                         isEditing = false
                                     },
                                     modifier = Modifier.weight(1f),
-                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green.copy(alpha = 0.6f))
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color.Green.copy(
+                                            alpha = 0.6f
+                                        )
+                                    )
                                 ) {
                                     Text("Confirm")
                                 }
