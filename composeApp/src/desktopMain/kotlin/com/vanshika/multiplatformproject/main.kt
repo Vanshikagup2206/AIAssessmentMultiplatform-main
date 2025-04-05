@@ -1,12 +1,14 @@
 package com.vanshika.multiplatformproject
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -17,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -55,7 +58,10 @@ import javax.swing.UIManager.put
 import org.apache.poi.ss.usermodel.*
 import java.io.*
 import org.apache.tika.Tika
+<<<<<<< HEAD
 import okhttp3.RequestBody.Companion.toRequestBody
+=======
+>>>>>>> b947adb621ef316115e743691d3b07977f2c2885
 
 fun main() = application {
     val answer = "Student's Answer Here"
@@ -109,10 +115,20 @@ fun DesktopApp(
             ) {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Text(
+//                        text = "EDUMARK-AI: TRANSFORMING SCORING AND FEEDBACK",
+//                        fontSize = 18.sp,
+//                        fontWeight = FontWeight.Bold,
+//                        textAlign = TextAlign.Center
                         text = "EDUMARK-AI: TRANSFORMING SCORING AND FEEDBACK",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        fontSize = 22.sp, // ✅ Bigger Font for Impact
+                        fontWeight = FontWeight.Bold, // ✅ Extra Bold for Attention
+                        color = Color.White, // ✅ Deep Blue for Professional Look
+                        textAlign = TextAlign.Center,
+                        fontStyle = FontStyle.Italic, // ✅ Slight Italic for Modern Look
+                        letterSpacing = 1.5.sp, // ✅ Better Readability
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp) // ✅ Padding for Proper Spacing
                     )
                 }
             }
@@ -277,10 +293,12 @@ fun DesktopApp(
                     text = {
                         Column {
                             selectedFiles.forEach { (label, path) ->
-                                Text(text = "$label: ${File(path).name}",
+                                Text(
+                                    text = "$label: ${File(path).name}",
                                     modifier = Modifier.clickable {
                                         openSelectedFile(path); showDialog = false
-                                    }.padding(8.dp))
+                                    }.padding(8.dp)
+                                )
                             }
                         }
                     },
@@ -389,11 +407,15 @@ fun DesktopApp(
                                     }
                                 } else if (feedbackContent != null) {
                                     Text(
-                                        "AI Evaluation",
+                                        "\uD83D\uDCD8 EDUMARK-AI Score and Feedback",
                                         style = MaterialTheme.typography.h6,
                                         modifier = Modifier.padding(bottom = 8.dp)
                                     )
-                                    DisplayFeedback(JSONObject(feedbackContent!!))
+                                    DisplayFeedback(
+                                        JSONObject(feedbackContent!!),
+                                        onConfirmAll = { confirmedScores ->
+                                            println("Confirmed Scores: $confirmedScores")
+                                        })
                                 }
                             }
 
@@ -410,136 +432,175 @@ fun DesktopApp(
 }
 
 @Composable
-fun DisplayFeedback(jsonResponse: JSONObject) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        // Overall Score Section
-        Text(
-            "🔢 Overall Score: ${jsonResponse.optString("overall_score")}",
-            fontSize = 18.sp,
-            color = Color.Blue
-        )
+fun DisplayFeedback(
+    jsonResponse: JSONObject,
+    onConfirmAll: (Map<String, Float>) -> Unit // Function to handle all confirmed scores
+) {
+    val sectionScores = remember { mutableStateMapOf<String, Float>() }
+    val editingState = remember { mutableStateMapOf<String, Boolean>() }
 
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("✅ Strengths:", fontWeight = FontWeight.Bold)
-        jsonResponse.optJSONArray("strengths")?.let {
-            for (i in 0 until it.length()) {
-                Text("- ${it.getString(i)}")
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+    ) {
+        // Score and Confirm All Button Row
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Score: ${jsonResponse.optString("overall_score")}",
+                style = MaterialTheme.typography.h6,
+                color = Color.Blue,
+                fontWeight = FontWeight.Bold
+            )
+
+            Button(
+                onClick = {
+                    // ✅ Confirm all scores and pass data
+                    onConfirmAll(sectionScores)
+                    // ✅ Lock all sections from further editing
+                    editingState.keys.forEach { key -> editingState[key] = false }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color(0xFF4CAF50), // Green color
+                    contentColor = Color.White
+                ),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 8.dp
+                )
+            ) {
+                Text("Confirm All")
             }
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("⚠ Improvement Areas:", fontWeight = FontWeight.Bold)
-        jsonResponse.optJSONArray("improvement_areas")?.let {
-            for (i in 0 until it.length()) {
-                Text("- ${it.getString(i)}", color = Color.Red)
+        Spacer(modifier = Modifier.height(16.dp))
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("✅ Strengths:", fontWeight = FontWeight.Bold,
+                color = Color(0xFF0D47A1) // ✅ Darker Blue Text for better contrast
+            )
+            jsonResponse.optJSONArray("strengths")?.let {
+                for (i in 0 until it.length()) {
+                    Text("- ${it.getString(i)}")
+                }
             }
-        }
 
-        // Section-wise Feedback
-        jsonResponse.optJSONArray("section_wise")?.let { sections ->
-            for (i in 0 until sections.length()) {
-                val section = sections.getJSONObject(i)
-//                val initialScore = section.optDouble("section_score").takeIf { !it.isNaN() }?.toFloat() ?: 0f
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("⚠ Improvement Areas:", fontWeight = FontWeight.Bold,color = Color.Red)
+            jsonResponse.optJSONArray("improvement_areas")?.let {
+                for (i in 0 until it.length()) {
+                    Text("- ${it.getString(i)}", color = Color.Black)
+                }
+            }
+            // Section-wise Feedback
+            jsonResponse.optJSONArray("section_wise")?.let { sections ->
+                for (i in 0 until sections.length()) {
+                    val section = sections.getJSONObject(i)
+                    var isEditing by remember { mutableStateOf(false) }
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                // State for editable score
-//                var sectionScore by remember { mutableStateOf(initialScore) }
-                var isEditing by remember { mutableStateOf(false) }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        // Section Header
-                        Text(
-                            "📌 Section: ${section.getString("section")}",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-
-                        // Criteria feedback
-                        section.optJSONArray("criteria")?.let { criteria ->
-                            for (j in 0 until criteria.length()) {
-                                val crit = criteria.getJSONObject(j)
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    "🔹 ${crit.getString("criterion")}: ${crit.getString("score")} (${
-                                        crit.getString("achieved_level")
-                                    })", fontWeight = FontWeight.Bold
-                                )
-                                Text("   - ${crit.getString("feedback")}")
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Score display and slider section
-                        Text(
-                            "📊 Score: ${section.getString("section_score")}",
-                            color = Color.Magenta,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        var sectionScore by remember {
-                            mutableStateOf(
-                                section.optDouble("section_score").takeIf { !it.isNaN() }?.toFloat()
-                                    ?: 0f
+                    // Feedback Card
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        shape = RoundedCornerShape(4.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            // Section Header
+                            Text(
+                                "📌 Section: ${section.getString("section")}",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
                             )
-                        }
-                        // Slider with edit/confirm buttons
-                        Slider(
-                            value = sectionScore,
-                            onValueChange = { sectionScore = it },
-                            valueRange = 0f..10f,
-                            steps = 10,
-                            modifier = Modifier.fillMaxWidth()
-                        )
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            if (!isEditing) {
-                                Button(
-                                    onClick = { isEditing = true }, modifier = Modifier.weight(1f)
-                                ) {
-                                    Text("Edit")
-                                }
-                            } else {
-                                Button(
-                                    onClick = {
-                                        sectionScore = sectionScore
-                                        isEditing = false
-                                    },
-                                    modifier = Modifier.weight(1f),
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Color.Red.copy(
-                                            alpha = 0.6f
-                                        )
+                            // Criteria feedback
+                            section.optJSONArray("criteria")?.let { criteria ->
+                                for (j in 0 until criteria.length()) {
+                                    val crit = criteria.getJSONObject(j)
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        "🔹 ${crit.getString("criterion")}: ${crit.getString("score")} (${
+                                            crit.getString("achieved_level")
+                                        })", fontWeight = FontWeight.Bold
                                     )
-                                ) {
-                                    Text("Cancel")
-                                }
-
-                                Spacer(modifier = Modifier.width(16.dp))
-
-                                Button(
-                                    onClick = {
-                                        // Here you would update the backend with sectionScore
-                                        isEditing = false
-                                    },
-                                    modifier = Modifier.weight(1f),
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Color.Green.copy(
-                                            alpha = 0.6f
-                                        )
-                                    )
-                                ) {
-                                    Text("Confirm")
+                                    Text("   - ${crit.getString("feedback")}")
                                 }
                             }
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Score display and slider section
+                            Text(
+                                "📊 Score: ${section.getString("section_score")}",
+                                color = Color.Magenta,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            var sectionScore by remember {
+                                mutableStateOf(
+                                    section.optDouble("section_score").takeIf { !it.isNaN() }
+                                        ?.toFloat()
+                                        ?: 0f
+                                )
+                            }
+                            // Slider with edit/confirm buttons
+                            Slider(
+                                value = sectionScore,
+                                onValueChange = { sectionScore = it },
+                                valueRange = 0f..10f,
+                                steps = 10,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                if (!isEditing) {
+                                    Button(
+                                        onClick = { isEditing = true },
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text("Edit")
+                                    }
+                                } else {
+                                    Button(
+                                        onClick = {
+                                            sectionScore = sectionScore
+                                            isEditing = false
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = Color.Red.copy(
+                                                alpha = 0.6f
+                                            )
+                                        )
+                                    ) {
+                                        Text("Cancel")
+                                    }
+
+                                    Spacer(modifier = Modifier.width(16.dp))
+
+                                    Button(
+                                        onClick = {
+                                            // Here you would update the backend with sectionScore
+                                            isEditing = false
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = Color.Green.copy(
+                                                alpha = 0.6f
+                                            )
+                                        )
+                                    ) {
+                                        Text("Confirm")
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
                         }
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
             }
@@ -713,7 +774,8 @@ fun readPdfContent(file: File): String {
         PDDocument.load(file).use { doc ->
             // 🔹 Remove security restrictions if the document is encrypted
             if (doc.isEncrypted) {
-                val accessPermission = AccessPermission().apply { setCanExtractContent(true) }
+                val accessPermission =
+                    AccessPermission().apply { setCanExtractContent(true) }
             }
 
             // 🔹 Extract text using PDFBox
@@ -773,7 +835,8 @@ fun readDocxContent(file: File): String {
             doc.tables.forEach { table ->
                 content.append("\n[TABLE START]\n")
                 table.rows.forEach { row ->
-                    val rowContent = row.tableCells.joinToString(" | ") { it.text.replace("\n", " ") }
+                    val rowContent =
+                        row.tableCells.joinToString(" | ") { it.text.replace("\n", " ") }
                     content.append("| $rowContent |\n")
                 }
                 content.append("[TABLE END]\n")
@@ -848,7 +911,8 @@ fun extractImagesFromPdf(file: File): List<String> {
                 for (xObjectName in resources.xObjectNames) {
                     val xObject = resources.getXObject(xObjectName)
                     if (xObject is PDImageXObject) {
-                        val outputFile = File.createTempFile("pdf_image_${pageNum}_", ".png")
+                        val outputFile =
+                            File.createTempFile("pdf_image_${pageNum}_", ".png")
                         ImageIO.write(xObject.image, "PNG", outputFile)
                         imagePaths.add(outputFile.absolutePath)
                     }
