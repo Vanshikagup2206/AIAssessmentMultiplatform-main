@@ -58,7 +58,9 @@ import javax.swing.UIManager.put
 import org.apache.poi.ss.usermodel.*
 import java.io.*
 import org.apache.tika.Tika
-
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 fun main() = application {
     val answer = "Student's Answer Here"
     val rubric = "Rubric Criteria Here"
@@ -426,7 +428,6 @@ fun DesktopApp(
         }
     }
 }
-
 @Composable
 fun DisplayFeedback(
     jsonResponse: JSONObject,
@@ -434,6 +435,19 @@ fun DisplayFeedback(
 ) {
     val sectionScores = remember { mutableStateMapOf<String, Float>() }
     val editingState = remember { mutableStateMapOf<String, Boolean>() }
+// ✅ Calculate totalMax ONCE and remember it across recompositions
+    val totalMax = jsonResponse.optJSONArray("section_wise")?.let { sections ->
+        (0 until sections.length()).sumOf {
+            val section = sections.getJSONObject(it)
+            val sectionName = section.getString("section")
+            if (sectionScores.containsKey(sectionName)) {
+                section.optString("section_score")
+                    .split("/").getOrNull(1)?.toFloatOrNull()?.toDouble() ?: 10.0
+            } else {
+                0.0
+            }
+        }
+    } ?: 100.0
 
     Column(
         modifier = Modifier
@@ -454,22 +468,36 @@ fun DisplayFeedback(
 
             Button(
                 onClick = {
-                    // ✅ Confirm all scores and pass data
-                    onConfirmAll(sectionScores)
-                    // ✅ Lock all sections from further editing
+                    // Calculate new overall score
+                    val totalScore = sectionScores.values.sum().toDouble()
+
+//                    val totalMax = jsonResponse.optJSONArray("section_wise")?.let { sections ->
+//                        (0 until sections.length()).sumOf {
+//                            val section = sections.getJSONObject(it)
+//                            (
+//                                    section.optString("section_score")
+//                                        .split("/").getOrNull(1)?.toFloatOrNull() ?: 10f
+//                                    ).toDouble() // 👈 Force toDouble() to avoid ambiguity
+//                        }
+//                    } ?: 100.0
+
+                    val newOverall = "${"%.1f".format(totalScore)}/${totalMax.toInt()}"
+
+                    jsonResponse.put("overall_score", newOverall)
+
+                    // Lock all sections from editing
                     editingState.keys.forEach { key -> editingState[key] = false }
-                },
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Color(0xFF4CAF50), // Green color
+
+                    // Trigger final callback
+                    onConfirmAll(sectionScores)
+                },   colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color(0xFF4CAF50), // Green
                     contentColor = Color.White
-                ),
-                elevation = ButtonDefaults.elevation(
-                    defaultElevation = 4.dp,
-                    pressedElevation = 8.dp
                 )
             ) {
-                Text("Confirm All")
-            }
+            Text("Confirm All")
+        }
+
         }
         Spacer(modifier = Modifier.height(16.dp))
         Column(modifier = Modifier.padding(16.dp)) {
@@ -493,7 +521,19 @@ fun DisplayFeedback(
             jsonResponse.optJSONArray("section_wise")?.let { sections ->
                 for (i in 0 until sections.length()) {
                     val section = sections.getJSONObject(i)
+                    val sectionName = section.getString("section")
                     var isEditing by remember { mutableStateOf(false) }
+
+                    val sectionScoreInitial = section.optString("section_score")
+                        .takeIf { it.isNotEmpty() && it != "NaN" }?.split("/")?.first()?.toFloatOrNull() ?: 0f
+                    val maxScore = section.optString("section_score")
+                        .split("/").getOrNull(1)?.toFloatOrNull() ?: 10f
+
+                    var sliderValue by remember { mutableStateOf(sectionScoreInitial) }
+                    var confirmedScore by remember { mutableStateOf(sectionScoreInitial) }
+
+                    sectionScores[sectionName] = confirmedScore // Update to latest value
+
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Feedback Card
@@ -504,105 +544,95 @@ fun DisplayFeedback(
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            // Section Header
                             Text(
-                                "📌 Section: ${section.getString("section")}",
+                                "📌 Section: $sectionName",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp
                             )
 
-                            // Criteria feedback
                             section.optJSONArray("criteria")?.let { criteria ->
                                 for (j in 0 until criteria.length()) {
                                     val crit = criteria.getJSONObject(j)
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        "🔹 ${crit.getString("criterion")}: ${crit.getString("score")} (${
-                                            crit.getString("achieved_level")
-                                        })", fontWeight = FontWeight.Bold
+                                        "🔹 ${crit.getString("criterion")}: ${crit.getString("score")} (${crit.getString("achieved_level")})",
+                                        fontWeight = FontWeight.Bold
                                     )
                                     Text("   - ${crit.getString("feedback")}")
                                 }
                             }
-                            Spacer(modifier = Modifier.height(16.dp))
 
-                            // Score display and slider section
+                            Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                "📊 Score: ${section.getString("section_score")}",
+                                "📊 Score: ${"%.1f".format(confirmedScore)}/${maxScore.toInt()}",
                                 color = Color.Magenta,
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
-                            var sectionScore by remember {
-                                mutableStateOf(
-                                    section.optDouble("section_score").takeIf { !it.isNaN() }
-                                        ?.toFloat()
-                                        ?: 0f
-                                )
-                            }
-                            // Slider with edit/confirm buttons
-                            Slider(
-                                value = sectionScore,
-                                onValueChange = { sectionScore = it },
-                                valueRange = 0f..10f,
-                                steps = 10,
-                                modifier = Modifier.fillMaxWidth()
-                            )
 
-
+                            // Slider + Buttons Row
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
+                                Slider(
+                                    value = sliderValue,
+                                    onValueChange = {
+                                        if (isEditing) sliderValue = it
+                                    },
+                                    valueRange = 0f..maxScore,
+                                    steps = (maxScore - 1).toInt(),
+                                    enabled = isEditing,
+                                    modifier = Modifier.weight(1f),
+                                    colors = SliderDefaults.colors(
+                                        thumbColor = if (isEditing) Color(0xFF7B1FA2) else Color.Gray,
+                                        activeTrackColor = Color(0xFF7B1FA2),
+                                        inactiveTrackColor = Color.LightGray.copy(alpha = 0.4f)
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
                                 if (!isEditing) {
-                                    Button(
-                                        onClick = { isEditing = true },
-                                        modifier = Modifier.weight(1f)
-                                    ) {
+                                    Button(onClick = { isEditing = true }) {
                                         Text("Edit")
                                     }
                                 } else {
                                     Button(
                                         onClick = {
-                                            sectionScore = sectionScore
+                                            sliderValue = confirmedScore // Revert back
                                             isEditing = false
                                         },
-                                        modifier = Modifier.weight(1f),
-                                        colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = Color.Red.copy(
-                                                alpha = 0.6f
-                                            )
-                                        )
+                                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red.copy(alpha = 0.6f))
                                     ) {
                                         Text("Cancel")
                                     }
 
-                                    Spacer(modifier = Modifier.width(16.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
 
                                     Button(
                                         onClick = {
-                                            // Here you would update the backend with sectionScore
+                                            sectionScores[sectionName] = sliderValue
+                                            confirmedScore = sliderValue
+
                                             isEditing = false
                                         },
-                                        modifier = Modifier.weight(1f),
-                                        colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = Color.Green.copy(
-                                                alpha = 0.6f
-                                            )
-                                        )
+                                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green.copy(alpha = 0.6f))
                                     ) {
                                         Text("Confirm")
                                     }
                                 }
                             }
-                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
             }
+
         }
     }
 }
+
 
 fun evaluateAnswerSheet(
     answerSheet: String, rubric: String, questionPaper: String, // Added Question Paper
