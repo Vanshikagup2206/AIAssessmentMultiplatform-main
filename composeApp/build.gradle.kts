@@ -74,6 +74,9 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4") // Coroutines
             implementation("io.ktor:ktor-client-core:2.0.0") // HTTP client for API calls
             implementation("io.ktor:ktor-client-cio:2.0.0")
+            implementation("io.ktor:ktor-client-content-negotiation:2.3.1")
+            implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
             implementation("com.squareup.okio:okio:3.2.0")
             implementation("org.apache.tika:tika-core:2.9.1")
             implementation("org.apache.tika:tika-parsers-standard-package:2.9.1")

@@ -51,13 +51,11 @@ import java.sql.DriverManager.println
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import androidx.compose.ui.window.Dialog
-
 import javax.swing.UIManager.put
 import org.apache.poi.ss.usermodel.*
 import java.io.*
 import org.apache.tika.Tika
-import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy
-import java.awt.image.BufferedImage
+import okhttp3.RequestBody.Companion.toRequestBody
 
 fun main() = application {
     val answer = "Student's Answer Here"
@@ -550,76 +548,28 @@ fun DisplayFeedback(jsonResponse: JSONObject) {
 }
 
 fun evaluateAnswerSheet(
-    answerSheet: String, rubric: String, questionPaper: String, // Added Question Paper
-    prompt: String, selectedFiles: Map<String, String>, onResult: (String) -> Unit
+    answerSheet: String,
+    rubric: String,
+    questionPaper: String,
+    prompt: String,
+    selectedFiles: Map<String, String>,
+    onResult: (String) -> Unit
 ) {
-    val parsedRubric = if (rubric.contains("\t")) parseExcelRubric(
-        File(
-            selectedFiles["Rubric"] ?: ""
-        )
-    ) else rubric
+    val parsedRubric = if (rubric.contains("\t")) parseExcelRubric(File(selectedFiles["Rubric"] ?: "")) else rubric
 
-    val client = OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS).build()
+    val client = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .build()
 
-    val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc" // Ensure this is a valid key
-    val url =
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
+    val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc"
+    val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
 
-    // Truncate inputs to avoid exceeding model limits
-    val truncatedRubric = parsedRubric.take(100000) // ~100k characters
-    val truncatedAnswer = answerSheet.take(500000) // ~500k characters
-    val truncatedQuestionPaper = questionPaper.take(100000) // ~100k characters
+    val truncatedRubric = parsedRubric.take(100000)
+    val truncatedAnswer = answerSheet.take(500000)
+    val truncatedQuestionPaper = questionPaper.take(100000)
 
-    val prompt = """
-    ROLE: Expert academic evaluator analyzing answer sheets using both rubric and question paper.
-    
-    TASK:
-    1. Parse the question paper to understand what is expected in the answers.
-    2. Analyze the rubric to extract evaluation criteria and scoring guidelines.
-    3. Evaluate the student’s answer based on both the question paper and the rubric.
-    4. Provide a JSON response with detailed feedback, scores, strengths, and improvement areas.
-//    5. Review the question paper to understand what was asked
-//    6. Parse the tabular rubric data
-//    7. Evaluate answer against both the question requirements and rubric criteria
-//    8. Return JSON response with scores
-    QUESTION PAPER:
-    $truncatedQuestionPaper
-    
-    
-    RUBRIC:
-    ${if (truncatedRubric.startsWith("ERROR")) "INVALID RUBRIC FORMAT" else truncatedRubric}
-    
-    STUDENT ANSWER:
-    $truncatedAnswer
-    
-    RESPONSE FORMAT:
-    {
-        "overall_score": "X/100",
-        "section_wise": [
-            {
-                "section": "Section Name",
-                "criteria": [
-                    {
-                        "criterion": "Criterion Name",
-                        "score": "X/Y",
-                        "feedback": "Specific comments",
-                        "achieved_level": "Excellent/Good/Fair/Needs improvement"
-                    }
-                ],
-                "section_score": "X/Y"
-            }
-        ],
-        "strengths": [],
-        "improvement_areas": []
-    }
-    
-    INSTRUCTIONS:
-    - Match student’s answer against the **question paper** expectations and the **rubric**.
-    - Assign scores accordingly and provide specific feedback for each criterion.
-    - Convert rubric percentages into appropriate scores.
-    - Highlight where the student met or missed key points from the question paper.
-""".trimIndent()
+    val prompt = createEvaluationPrompt(truncatedQuestionPaper, truncatedRubric, truncatedAnswer)
 
     val requestBody = JSONObject().apply {
         put("contents", JSONArray().apply {
@@ -632,7 +582,7 @@ fun evaluateAnswerSheet(
             })
         })
         put("generationConfig", JSONObject().apply {
-            put("temperature", 0.3) // Lower for consistent scoring
+            put("temperature", 0.3)
             put("topP", 0.8)
             put("topK", 40)
             put("maxOutputTokens", 4096)
@@ -658,39 +608,32 @@ fun evaluateAnswerSheet(
         }
 
         override fun onResponse(call: Call, response: Response) {
-            val responseBody = response.body?.string() ?: ""
+            val responseBody = response.body?.string() ?: return onResult("Empty Response")
+
             try {
                 val jsonResponse = JSONObject(responseBody)
 
-                // Handle API errors
                 if (jsonResponse.has("error")) {
                     val error = jsonResponse.getJSONObject("error")
                     onResult("API Error (${error.optInt("code")}): ${error.getString("message")}")
                     return
                 }
 
-                // Parse successful response
                 val candidates = jsonResponse.optJSONArray("candidates") ?: JSONArray()
                 if (candidates.length() == 0) {
                     onResult("Error: No evaluation returned from API")
                     return
                 }
 
-                val content = candidates.getJSONObject(0).getJSONObject("content")
-                val parts = content.getJSONArray("parts")
-                if (parts.length() == 0) {
-                    onResult("Error: No evaluation content found")
-                    return
-                }
+                val parts = candidates.getJSONObject(0)
+                    .optJSONObject("content")
+                    ?.optJSONArray("parts")
 
-                val text = parts.getJSONObject(0).getString("text")
-
-                // Try to pretty-print the JSON
+                val text = parts?.optJSONObject(0)?.optString("text") ?: ""
                 try {
                     val json = JSONObject(text)
                     onResult(json.toString(4))
                 } catch (e: Exception) {
-                    // If not valid JSON, return as-is with note
                     onResult("Received non-JSON response:\n$text")
                 }
 
@@ -698,15 +641,66 @@ fun evaluateAnswerSheet(
                 onResult(
                     """
                     Error parsing response: ${e.message}
-                    
-                    Raw Response (first 2000 chars):
-                    ${responseBody.take(2000)}${if (responseBody.length > 2000) "\n[...truncated]" else ""}
+                    Raw Response:
+                    ${responseBody.take(2000)}${if (responseBody.length > 2000) "\n...[truncated]" else ""}
                 """.trimIndent()
                 )
             }
         }
     })
 }
+
+fun createEvaluationPrompt(questionPaper: String, rubric: String, answerSheet: String): String {
+    return """
+        ROLE: Expert academic evaluator with extensive experience in assessment.
+
+        TASK:
+        1. FIRST: Carefully analyze the question paper to understand what is being asked.
+        2. SECOND: Analyze the student's answer to determine if it correctly addresses the question(s) asked.
+        3. THIRD: Evaluate how well the answer meets the criteria in the rubric.
+        4. Determine if the answer is relevant and responsive to the question before applying rubric scoring.
+        5. Provide a JSON response with detailed feedback, scores, strengths, and areas for improvement.
+
+        EVALUATION PROCESS:
+        - First check if the answer responds to the question - irrelevant answers should receive low scores
+        - Only after determining relevance, apply rubric criteria for content quality, organization, etc.
+        - Identify missing key points from the question that should have been addressed
+        - Be objective and fair in your assessment
+
+        QUESTION PAPER:
+        ${questionPaper.ifBlank { "QUESTION PAPER NOT PROVIDED" }}
+
+        RUBRIC:
+        ${rubric.ifBlank { "RUBRIC NOT PROVIDED" }}
+
+        STUDENT ANSWER:
+        ${answerSheet.ifBlank { "ANSWER SHEET NOT PROVIDED" }}
+
+        RESPONSE FORMAT:
+        {
+            "overall_score": "X/100",
+            "section_wise": [
+                {
+                    "section": "Section Name",
+                    "criteria": [
+                        {
+                            "criterion": "Criterion Name",
+                            "score": "X/Y",
+                            "feedback": "Specific comments that reference both the question requirements and rubric criteria",
+                            "achieved_level": "Excellent/Good/Fair/Needs improvement"
+                        }
+                    ],
+                    "section_score": "X/Y"
+                }
+            ],
+            "strengths": ["...", "..."],
+            "improvement_areas": ["...", "..."]
+        }
+
+        IMPORTANT: Your primary task is to judge if the answer correctly addresses what was asked in the question paper, THEN apply the rubric criteria.
+    """.trimIndent()
+}
+
 
 fun openFileDialog(title: String): String? {
     val fileDialog = FileDialog(null as Frame?, "Select $title", FileDialog.LOAD)
