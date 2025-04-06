@@ -754,17 +754,12 @@ fun createEvaluationPrompt(questionPaper: String, rubric: String, answerSheet: S
         - Only after determining relevance, apply rubric criteria for content quality, organization, etc.
         - Identify missing key points from the question that should have been addressed
         - Be objective and fair in your assessment
-
-        SCORING INSTRUCTIONS:
+        
+         SCORING INSTRUCTIONS:
         - The overall_score must be calculated by adding up the section_score values from each section.
         - DO NOT assume a fixed total like 100.
         - Each section_score can have its own max score (e.g., 10, 25, etc.).
         - If rubric provides per-section or per-criterion scores, use those to determine section_score and overall_score.
-        
-        NOTE:
-        - The evaluation must include ALL sections mentioned in the question paper.
-        - If a section is mentioned in the question paper or rubric, it must be reflected in the section_wise evaluation.
-        - Do not skip any sections unless they are explicitly marked as 'Optional' or 'Not Attempted'.
 
         QUESTION PAPER:
         ${questionPaper.ifBlank { "QUESTION PAPER NOT PROVIDED" }}
@@ -777,7 +772,7 @@ fun createEvaluationPrompt(questionPaper: String, rubric: String, answerSheet: S
 
         RESPONSE FORMAT:
         {
-            "overall_score": "X/Y",  // Total of all section scores
+            "overall_score": "X/Y",
             "section_wise": [
                 {
                     "section": "Section Name",
@@ -799,7 +794,6 @@ fun createEvaluationPrompt(questionPaper: String, rubric: String, answerSheet: S
         IMPORTANT: Your primary task is to judge if the answer correctly addresses what was asked in the question paper, THEN apply the rubric criteria.
     """.trimIndent()
 }
-
 
 fun openFileDialog(title: String): String? {
     val fileDialog = FileDialog(null as Frame?, "Select $title", FileDialog.LOAD)
