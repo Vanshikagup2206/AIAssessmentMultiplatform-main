@@ -3,6 +3,7 @@ package com.vanshika.multiplatformproject
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -92,21 +93,8 @@ fun DesktopApp(
 //    var customPromptResponse by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var feedbackContent by remember { mutableStateOf<String?>(null) }
-    val BRIEF_PROMPT_PREVIEW = "Evaluate answer sheet against rubric and provide detailed feedback"
-    val FULL_PROMPT_TEMPLATE = """
-    Evaluate this answer sheet against the provided rubric and provide detailed feedback with scores.
-    
-    RUBRIC:
-    %RUBRIC%
-    
-    ANSWER SHEET:
-    %ANSWER_SHEET%
-    
-    Provide specific feedback with improvement suggestions.
-"""
-    // New states for prompt management
+    var isReevaluation by remember { mutableStateOf(false) }
     var showPromptPanel by remember { mutableStateOf(false) }
-//    var currentPrompt by remember { mutableStateOf("") }
     var finalPrompt by remember { mutableStateOf<String?>(null) }
 
 //    LaunchedEffect(Unit) {
@@ -123,10 +111,6 @@ fun DesktopApp(
             ) {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Text(
-//                        text = "EDUMARK-AI: TRANSFORMING SCORING AND FEEDBACK",
-//                        fontSize = 18.sp,
-//                        fontWeight = FontWeight.Bold,
-//                        textAlign = TextAlign.Center
                         text = "EDUMARK-AI: TRANSFORMING SCORING AND FEEDBACK",
                         fontSize = 22.sp, // ✅ Bigger Font for Impact
                         fontWeight = FontWeight.Bold, // ✅ Extra Bold for Attention
@@ -145,7 +129,6 @@ fun DesktopApp(
 
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-//            verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 listOf("Rubric", "Exam Paper", "Answer Sheet").forEach { label ->
@@ -160,7 +143,6 @@ fun DesktopApp(
                             }
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF6200EA)),
-//                        modifier = Modifier.height(48.dp) // Correct modifier syntax
                     ) {
                         Text(text = label, color = Color.White)
                     }
@@ -177,8 +159,9 @@ fun DesktopApp(
                     onClick = {
                         showPromptPanel = true
                         // Generate initial prompt
-                        currentPrompt = """
-                    "Evaluate this answer sheet against the provided rubric and provide detailed feedback with scores."
+                        currentPrompt = """"Evaluate this answer sheet against the provided rubric and provide detailed feedback with scores."
+                    
+                    
                     RUBRIC:
                     ${readFileContent(selectedFiles["Rubric"] ?: "").take(10000)}
 
@@ -282,9 +265,13 @@ fun DesktopApp(
                                                 feedbackContent = result
                                                 isLoading = false
                                             }
+                                            isReevaluation = false  // ✅ Reset after done
                                         }
+
                                     ) {
-                                        Text("Evaluate with This Prompt")
+//                                        Text("Evaluate with This Prompt")
+                                        Text(if (isReevaluation) "Re-evaluate with This Prompt" else "Evaluate with This Prompt")
+
                                     }
                                 }
                             }
@@ -361,11 +348,12 @@ fun DesktopApp(
                     if (finalPrompt != null) {
                         Card(
                             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-                                .height(150.dp),
+                                .height(150.dp).border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
                             elevation = 4.dp,
-                            backgroundColor = Color(0xFFE3F2FD) // Light blue background
+                            shape = RoundedCornerShape(16.dp) ,backgroundColor = Color(0xFFE3F2FD) // Light blue background
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
+                            Column(modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -380,16 +368,18 @@ fun DesktopApp(
                                         onClick = {
                                             showPromptPanel = true
                                             currentPrompt = finalPrompt ?: ""
-                                        }, modifier = Modifier.size(24.dp)
+                                            isReevaluation = true  // ✅ Important!
+                                                  }, modifier = Modifier.size(24.dp)
                                     ) {
                                         Icon(Icons.Default.Edit, "Edit Prompt")
                                     }
                                 }
                                 Text(
                                     finalPrompt!!,
-                                    modifier = Modifier.padding(top = 8.dp),
+                                    modifier = Modifier .fillMaxWidth().padding(top = 8.dp),
                                     fontSize = 14.sp,
                                     maxLines = 3,
+                                    textAlign = TextAlign.Center, // ✅ Center the text
                                     overflow = TextOverflow.Ellipsis
                                 )
                             }
