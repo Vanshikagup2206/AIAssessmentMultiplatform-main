@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     id("org.jetbrains.kotlin.plugin.compose")
+    kotlin("plugin.serialization") version "1.9.0"
+
 
 //    alias(libs.plugins.composeCompiler)
 

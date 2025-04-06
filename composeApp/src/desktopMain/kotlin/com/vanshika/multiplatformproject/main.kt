@@ -19,15 +19,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import io.ktor.utils.io.core.use
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.sourceforge.tess4j.Tesseract
 import net.sourceforge.tess4j.TesseractException
 import okhttp3.*
@@ -39,30 +44,24 @@ import org.apache.pdfbox.pdmodel.encryption.AccessPermission
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import org.apache.pdfbox.rendering.PDFRenderer
 import org.apache.pdfbox.text.PDFTextStripper
-import org.apache.poi.ss.usermodel.CellType
+import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.apache.poi.xwpf.usermodel.XWPFDocument
+import org.apache.tika.Tika
 import org.json.JSONArray
 import org.json.JSONObject
 import java.awt.Desktop
 import java.awt.FileDialog
 import java.awt.Frame
-import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
+import java.awt.image.BufferedImage
+import java.io.*
 import java.sql.DriverManager.println
+import java.util.Collections.emptyList
+import java.util.Collections.emptyMap
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
-import androidx.compose.ui.window.Dialog
 import javax.swing.UIManager.put
-import org.apache.poi.ss.usermodel.*
-import java.io.*
-import org.apache.tika.Tika
-import okhttp3.RequestBody.Companion.toRequestBody
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.toComposeImageBitmap
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.awt.image.BufferedImage
+import kotlinx.coroutines.delay  // THIS IS THE CRITICAL MISSING IMPORT
 
 fun main() = application {
     val answer = "Student's Answer Here"
@@ -73,9 +72,11 @@ fun main() = application {
     val awtImage: BufferedImage = ImageIO.read(imageStream)
     val iconPainter = BitmapPainter(awtImage.toComposeImageBitmap())
 
-    Window(onCloseRequest = ::exitApplication, title = "MultiPlatformProject",
+    Window(
+        onCloseRequest = ::exitApplication, title = "MultiPlatformProject",
 
-        icon = iconPainter )
+        icon = iconPainter
+    )
 
     {
         DesktopApp(answer, rubric, selectedFiles)
@@ -91,18 +92,28 @@ fun DesktopApp(
     var showDialog by remember { mutableStateOf(false) }
     var fileContent by remember { mutableStateOf("") }
     var currentPrompt by remember { mutableStateOf("Evaluate this answer sheet against the provided rubric") }
-//    var customPromptResponse by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var feedbackContent by remember { mutableStateOf<String?>(null) }
     var isReevaluation by remember { mutableStateOf(false) }
     var showPromptPanel by remember { mutableStateOf(false) }
     var finalPrompt by remember { mutableStateOf<String?>(null) }
+    val coroutineScope = rememberCoroutineScope()
+    var feedback by remember { mutableStateOf("") }
+// State variables for toast
+    var showToast by remember { mutableStateOf(false) }
+    var toastMessage by remember { mutableStateOf("") }
+    var dialogMessage by remember { mutableStateOf("") }
+    var showPopup by remember { mutableStateOf(false) }
+    var popupMessage by remember { mutableStateOf("") }
+    var studentName by remember { mutableStateOf("") }
+    var studentId by remember { mutableStateOf("") }
+    var overallScore by remember { mutableStateOf("") }
+    val strengths = listOf("Good Introduction", "Strong Conclusion")
+    val improvementAreas = listOf("Weak Methodology")
+    val sectionScores = mapOf("Introduction" to "7", "Method" to "5")
 
-//    LaunchedEffect(Unit) {
-//        evaluateAnswerSheet(answer, rubric, selectedFiles) { result ->
-//            feedbackContent = result
-//        }
-//    }
+
+
     MaterialTheme {
         Column(
             modifier = Modifier.fillMaxSize().background(Color(0xFFADD8E6)).padding(16.dp)
@@ -160,15 +171,16 @@ fun DesktopApp(
                     onClick = {
                         showPromptPanel = true
                         // Generate initial prompt
-                        currentPrompt = """"Evaluate this answer sheet against the provided rubric and provide detailed feedback with scores."
-                    
-                    
+                        currentPrompt =
+                            """"Evaluate this answer sheet against the provided rubric and provide detailed feedback with scores."
+
+
                     RUBRIC:
                     ${readFileContent(selectedFiles["Rubric"] ?: "").take(10000)}
 
                     ANSWER SHEET:
                     ${readFileContent(selectedFiles["Answer Sheet"] ?: "").take(50000)}
-                    
+
                     QUESTION PAPER:
                     ${readFileContent(selectedFiles["Exam Paper"] ?: "").take(50000)}
 
@@ -279,10 +291,71 @@ fun DesktopApp(
                         }
                     }
                 }
+                Button(
+                    onClick = {
+                        if (studentName.isBlank()) {
+                            toastMessage = "⚠ Please enter student name"
+                            showToast = true
+                        } else {
+                            coroutineScope.launch {
+                                try {
+                                    saveEvaluationToFirestore(
+                                        studentName = studentName,
+                                        studentId = "STUDENT_${System.currentTimeMillis()}", // Add this parameter
+                                        overallScore = "overallScore",   // Add this parameter
+                                        onSuccess = {
+                                            toastMessage = "✅ Saved to Firebase!"
+                                            showToast = true
+                                        },
+                                        onFailure = {
+                                            toastMessage = "❌ Failed to save"
+                                            showToast = true
+                                        }
+                                    )
+                                } catch (e: Exception) {
+                                    toastMessage = "Error: ${e.message}"
+                                    showToast = true
+                                }
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF4CAF50)),
+                    modifier = Modifier.height(48.dp)
+                ) {
+                    Text("Save to Firebase", color = Color.White)
+                }
+
+
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+            if (showToast) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentSize(Alignment.BottomCenter)
+                        .padding(16.dp)
+                ) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.Black.copy(alpha = 0.7f)
+                        ),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Text(
+                            text = toastMessage,
+                            color = Color.White,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
 
+                // Auto-dismiss after 2 seconds
+                LaunchedEffect(showToast) {
+                    delay(2000)
+                    showToast = false
+                }
+            }
             if (showDialog) {
                 AlertDialog(onDismissRequest = { showDialog = false },
                     title = { Text("Selected Files") },
@@ -320,6 +393,15 @@ fun DesktopApp(
                             modifier = Modifier.verticalScroll(scrollState).padding(16.dp)
                                 .fillMaxWidth()  // ✅ Set a reasonable max height
                         ) {
+                            OutlinedTextField(
+                                value = studentName,
+                                onValueChange = { studentName = it },
+                                label = { Text("Student Name") },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
                             Text(
                                 "Student Report",
                                 fontSize = 16.sp,
@@ -333,8 +415,6 @@ fun DesktopApp(
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-
-                        // ✅ Vertical Scrollbar - Works properly now
                         VerticalScrollbar(
                             modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
                             adapter = rememberScrollbarAdapter(scrollState)
@@ -349,12 +429,16 @@ fun DesktopApp(
                     if (finalPrompt != null) {
                         Card(
                             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-                                .height(150.dp).border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
+                                .height(150.dp)
+                                .border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)),
                             elevation = 4.dp,
-                            shape = RoundedCornerShape(16.dp) ,backgroundColor = Color(0xFFE3F2FD) // Light blue background
+                            shape = RoundedCornerShape(16.dp),
+                            backgroundColor = Color(0xFFE3F2FD) // Light blue background
                         ) {
-                            Column(modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally) {
+                            Column(
+                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -370,14 +454,14 @@ fun DesktopApp(
                                             showPromptPanel = true
                                             currentPrompt = finalPrompt ?: ""
                                             isReevaluation = true  // ✅ Important!
-                                                  }, modifier = Modifier.size(24.dp)
+                                        }, modifier = Modifier.size(24.dp)
                                     ) {
                                         Icon(Icons.Default.Edit, "Edit Prompt")
                                     }
                                 }
                                 Text(
                                     finalPrompt!!,
-                                    modifier = Modifier .fillMaxWidth().padding(top = 8.dp),
+                                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                                     fontSize = 14.sp,
                                     maxLines = 3,
                                     textAlign = TextAlign.Center, // ✅ Center the text
@@ -429,6 +513,9 @@ fun DesktopApp(
         }
     }
 }
+
+
+
 @Composable
 fun DisplayFeedback(
     jsonResponse: JSONObject,
@@ -471,17 +558,6 @@ fun DisplayFeedback(
                 onClick = {
                     // Calculate new overall score
                     val totalScore = sectionScores.values.sum().toDouble()
-
-//                    val totalMax = jsonResponse.optJSONArray("section_wise")?.let { sections ->
-//                        (0 until sections.length()).sumOf {
-//                            val section = sections.getJSONObject(it)
-//                            (
-//                                    section.optString("section_score")
-//                                        .split("/").getOrNull(1)?.toFloatOrNull() ?: 10f
-//                                    ).toDouble() // 👈 Force toDouble() to avoid ambiguity
-//                        }
-//                    } ?: 100.0
-
                     val newOverall = "${"%.1f".format(totalScore)}/${totalMax.toInt()}"
 
                     jsonResponse.put("overall_score", newOverall)
@@ -491,18 +567,19 @@ fun DisplayFeedback(
 
                     // Trigger final callback
                     onConfirmAll(sectionScores)
-                },   colors = ButtonDefaults.buttonColors(
+                }, colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color(0xFF4CAF50), // Green
                     contentColor = Color.White
                 )
             ) {
-            Text("Confirm All")
-        }
+                Text("Confirm All")
+            }
 
         }
         Spacer(modifier = Modifier.height(16.dp))
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("✅ Strengths:", fontWeight = FontWeight.Bold,
+            Text(
+                "✅ Strengths:", fontWeight = FontWeight.Bold,
                 color = Color(0xFF0D47A1) // ✅ Darker Blue Text for better contrast
             )
             jsonResponse.optJSONArray("strengths")?.let {
@@ -512,7 +589,7 @@ fun DisplayFeedback(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            Text("⚠ Improvement Areas:", fontWeight = FontWeight.Bold,color = Color.Red)
+            Text("⚠ Improvement Areas:", fontWeight = FontWeight.Bold, color = Color.Red)
             jsonResponse.optJSONArray("improvement_areas")?.let {
                 for (i in 0 until it.length()) {
                     Text("- ${it.getString(i)}", color = Color.Black)
@@ -526,7 +603,8 @@ fun DisplayFeedback(
                     var isEditing by remember { mutableStateOf(false) }
 
                     val sectionScoreInitial = section.optString("section_score")
-                        .takeIf { it.isNotEmpty() && it != "NaN" }?.split("/")?.first()?.toFloatOrNull() ?: 0f
+                        .takeIf { it.isNotEmpty() && it != "NaN" }?.split("/")?.first()
+                        ?.toFloatOrNull() ?: 0f
                     val maxScore = section.optString("section_score")
                         .split("/").getOrNull(1)?.toFloatOrNull() ?: 10f
 
@@ -556,7 +634,11 @@ fun DisplayFeedback(
                                     val crit = criteria.getJSONObject(j)
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        "🔹 ${crit.getString("criterion")}: ${crit.getString("score")} (${crit.getString("achieved_level")})",
+                                        "🔹 ${crit.getString("criterion")}: ${crit.getString("score")} (${
+                                            crit.getString(
+                                                "achieved_level"
+                                            )
+                                        })",
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text("   - ${crit.getString("feedback")}")
@@ -603,7 +685,11 @@ fun DisplayFeedback(
                                             sliderValue = confirmedScore // Revert back
                                             isEditing = false
                                         },
-                                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red.copy(alpha = 0.6f))
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = Color.Red.copy(
+                                                alpha = 0.6f
+                                            )
+                                        )
                                     ) {
                                         Text("Cancel")
                                     }
@@ -617,7 +703,11 @@ fun DisplayFeedback(
 
                                             isEditing = false
                                         },
-                                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green.copy(alpha = 0.6f))
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = Color.Green.copy(
+                                                alpha = 0.6f
+                                            )
+                                        )
                                     ) {
                                         Text("Confirm")
                                     }
@@ -634,7 +724,6 @@ fun DisplayFeedback(
     }
 }
 
-
 fun evaluateAnswerSheet(
     answerSheet: String,
     rubric: String,
@@ -643,7 +732,8 @@ fun evaluateAnswerSheet(
     selectedFiles: Map<String, String>,
     onResult: (String) -> Unit
 ) {
-    val parsedRubric = if (rubric.contains("\t")) parseExcelRubric(File(selectedFiles["Rubric"] ?: "")) else rubric
+    val parsedRubric =
+        if (rubric.contains("\t")) parseExcelRubric(File(selectedFiles["Rubric"] ?: "")) else rubric
 
     val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -651,7 +741,8 @@ fun evaluateAnswerSheet(
         .build()
 
     val apiKey = "AIzaSyACAhaIxIrz1mqt6gyz4c51g0xhCuKQOTc"
-    val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
+    val url =
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
 
     val truncatedRubric = parsedRubric.take(100000)
     val truncatedAnswer = answerSheet.take(1000000)
@@ -718,13 +809,22 @@ fun evaluateAnswerSheet(
                     ?.optJSONArray("parts")
 
                 val text = parts?.optJSONObject(0)?.optString("text") ?: ""
-                try {
-                    val json = JSONObject(text)
-                    onResult(json.toString(4))
-                } catch (e: Exception) {
+//                try {
+//                    val json = JSONObject(text)
+//                    onResult(json.toString(4))
+//                } catch (e: Exception) {
+//                    onResult("Received non-JSON response:\n$text")
+//                }
+                if (text.trim().startsWith("{")) {
+                    try {
+                        val json = JSONObject(text)
+                        onResult(json.toString(4))
+                    } catch (e: Exception) {
+                        onResult("Error parsing JSON:\n$text")
+                    }
+                } else {
                     onResult("Received non-JSON response:\n$text")
                 }
-
             } catch (e: Exception) {
                 onResult(
                     """
@@ -754,6 +854,7 @@ fun createEvaluationPrompt(questionPaper: String, rubric: String, answerSheet: S
         - Only after determining relevance, apply rubric criteria for content quality, organization, etc.
         - Identify missing key points from the question that should have been addressed
         - Be objective and fair in your assessment
+        
         
          SCORING INSTRUCTIONS:
         - The overall_score must be calculated by adding up the section_score values from each section.
@@ -856,8 +957,6 @@ fun readPdfContent(file: File): String {
         "Error reading PDF: ${e.message}"
     }
 }
-
-// Function to read DOCX content
 fun readDocxContent(file: File): String {
     return try {
         FileInputStream(file).use { fis ->
@@ -880,7 +979,6 @@ fun readDocxContent(file: File): String {
     }
 }
 
-// Function to read Excel content
 fun readExcelContent(file: File): String {
     return try {
         FileInputStream(file).use { fis ->
@@ -908,7 +1006,6 @@ fun readExcelContent(file: File): String {
     }
 }
 
-// Function to determine file type and process accordingly
 fun readFileContent(filePath: String): String {
     val file = File(filePath)
     return when (file.extension.lowercase()) {
