@@ -58,10 +58,7 @@ import javax.swing.UIManager.put
 import org.apache.poi.ss.usermodel.*
 import java.io.*
 import org.apache.tika.Tika
-<<<<<<< HEAD
 import okhttp3.RequestBody.Companion.toRequestBody
-=======
->>>>>>> b947adb621ef316115e743691d3b07977f2c2885
 
 fun main() = application {
     val answer = "Student's Answer Here"
