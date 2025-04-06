@@ -58,6 +58,7 @@ import javax.swing.UIManager.put
 import org.apache.poi.ss.usermodel.*
 import java.io.*
 import org.apache.tika.Tika
+import okhttp3.RequestBody.Companion.toRequestBody
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -653,8 +654,8 @@ fun evaluateAnswerSheet(
     val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=$apiKey"
 
     val truncatedRubric = parsedRubric.take(100000)
-    val truncatedAnswer = answerSheet.take(500000)
-    val truncatedQuestionPaper = questionPaper.take(100000)
+    val truncatedAnswer = answerSheet.take(1000000)
+    val truncatedQuestionPaper = questionPaper.take(500000)
 
     val prompt = createEvaluationPrompt(truncatedQuestionPaper, truncatedRubric, truncatedAnswer)
 
@@ -754,6 +755,17 @@ fun createEvaluationPrompt(questionPaper: String, rubric: String, answerSheet: S
         - Identify missing key points from the question that should have been addressed
         - Be objective and fair in your assessment
 
+        SCORING INSTRUCTIONS:
+        - The overall_score must be calculated by adding up the section_score values from each section.
+        - DO NOT assume a fixed total like 100.
+        - Each section_score can have its own max score (e.g., 10, 25, etc.).
+        - If rubric provides per-section or per-criterion scores, use those to determine section_score and overall_score.
+        
+        NOTE:
+        - The evaluation must include ALL sections mentioned in the question paper.
+        - If a section is mentioned in the question paper or rubric, it must be reflected in the section_wise evaluation.
+        - Do not skip any sections unless they are explicitly marked as 'Optional' or 'Not Attempted'.
+
         QUESTION PAPER:
         ${questionPaper.ifBlank { "QUESTION PAPER NOT PROVIDED" }}
 
@@ -765,7 +777,7 @@ fun createEvaluationPrompt(questionPaper: String, rubric: String, answerSheet: S
 
         RESPONSE FORMAT:
         {
-            "overall_score": "X/100",
+            "overall_score": "X/Y",  // Total of all section scores
             "section_wise": [
                 {
                     "section": "Section Name",
