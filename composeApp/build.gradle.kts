@@ -127,7 +127,7 @@ compose.desktop {
             packageName = "com.vanshika.multiplatformproject"
             packageVersion = "1.0.0"
             windows {
-                iconFile.set(file("icon.ico"))
+                iconFile.set(file("src/desktopMain/resources/edumark_icon.ico"))
             }
         }
     }

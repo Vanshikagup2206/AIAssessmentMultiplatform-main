@@ -60,14 +60,19 @@ import org.apache.tika.Tika
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.awt.image.BufferedImage
 
 fun main() = application {
     val answer = "Student's Answer Here"
     val rubric = "Rubric Criteria Here"
     val selectedFiles = mapOf("Rubric" to "path/to/rubric.xlsx")
-    val imageBitmap = ImageIO.read(object {}.javaClass.getResourceAsStream("/edumark.png"))
-        .toComposeImageBitmap()
-    val iconPainter = BitmapPainter(imageBitmap)
+//    val imageBitmap = ImageIO.read(object {}.javaClass.getResourceAsStream("/edumark.png"))
+//        .toComposeImageBitmap()
+//    val iconPainter = BitmapPainter(imageBitmap)
+    val imageStream = object {}.javaClass.getResourceAsStream("/edumark.png")
+        ?: throw IllegalStateException("Icon PNG not found in resources!")
+    val awtImage: BufferedImage = ImageIO.read(imageStream)
+    val iconPainter = BitmapPainter(awtImage.toComposeImageBitmap())
 
     Window(onCloseRequest = ::exitApplication, title = "MultiPlatformProject",
 
