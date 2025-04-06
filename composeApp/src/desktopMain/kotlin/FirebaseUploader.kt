@@ -6,7 +6,6 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
 import java.sql.DriverManager.println
 import java.time.Instant
@@ -14,7 +13,7 @@ import java.time.Instant
 val apiKey = "AIzaSyD5rqCR7rWmllecnwiiZWHkgU1pqLdPJX8"
 val projectId = "edumark-ai-812f7"
 
-suspend fun saveEvaluationToFirestore(
+suspend fun saveEvaluationToFireStore(
     studentName: String,
     studentId: String,
     overallScore: String,

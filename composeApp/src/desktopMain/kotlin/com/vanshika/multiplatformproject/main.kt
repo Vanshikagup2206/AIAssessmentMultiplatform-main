@@ -31,7 +31,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import io.ktor.utils.io.core.use
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.sourceforge.tess4j.Tesseract
 import net.sourceforge.tess4j.TesseractException
@@ -56,8 +55,6 @@ import java.awt.Frame
 import java.awt.image.BufferedImage
 import java.io.*
 import java.sql.DriverManager.println
-import java.util.Collections.emptyList
-import java.util.Collections.emptyMap
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import javax.swing.UIManager.put
@@ -299,7 +296,7 @@ fun DesktopApp(
                         } else {
                             coroutineScope.launch {
                                 try {
-                                    saveEvaluationToFirestore(
+                                    saveEvaluationToFireStore(
                                         studentName = studentName,
                                         studentId = "STUDENT_${System.currentTimeMillis()}", // Add this parameter
                                         overallScore = "overallScore",   // Add this parameter
