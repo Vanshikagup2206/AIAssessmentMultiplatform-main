@@ -1,6 +1,7 @@
 package com.vanshika.multiplatformproject
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toComposeImageBitmap
@@ -30,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.vanshika.multiplatformproject.com.vanshika.multiplatformproject.AuthScreen
 import io.ktor.utils.io.core.use
 import kotlinx.coroutines.launch
 import net.sourceforge.tess4j.Tesseract
@@ -70,13 +73,17 @@ fun main() = application {
     val iconPainter = BitmapPainter(awtImage.toComposeImageBitmap())
 
     Window(
-        onCloseRequest = ::exitApplication, title = "MultiPlatformProject",
-
+        onCloseRequest = ::exitApplication, title = "EDUMARK-AI",
         icon = iconPainter
     )
-
     {
-        DesktopApp(answer, rubric, selectedFiles)
+        var isLoggedIn by remember { mutableStateOf(false) }
+
+        if (!isLoggedIn) {
+            AuthScreen(onLoginSuccess = { isLoggedIn = true })
+        } else {
+            DesktopApp(answer, rubric, selectedFiles)
+        }
     }
 }
 
@@ -106,6 +113,7 @@ fun DesktopApp(
     var studentId by remember { mutableStateOf("") }
     var overallScore by remember { mutableStateOf("") }
     var isEvaluationDone by remember { mutableStateOf(false) }
+    var isLoggedIn by remember { mutableStateOf(false) }
 
     MaterialTheme {
         Column(
@@ -325,7 +333,7 @@ fun DesktopApp(
                         }else {
                             coroutineScope.launch {
                                 try {
-                                    saveEvaluationToFirestore(
+                                    saveEvaluationToFireStore(
                                         studentName = studentName,
                                         studentId = "STUDENT_${System.currentTimeMillis()}", // Add this parameter
                                         overallScore = overallScore,   // Add this parameter
@@ -410,7 +418,12 @@ fun DesktopApp(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Card(
-                    modifier = Modifier.weight(1f).fillMaxHeight(), backgroundColor = Color.White
+                    modifier = Modifier
+                        .weight(1f).fillMaxHeight()
+                        .border(BorderStroke(1.dp, Color.Black),
+                            shape = RoundedCornerShape(16.dp)),
+                    backgroundColor = Color.White,
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     val scrollState = rememberScrollState()
 
@@ -449,7 +462,11 @@ fun DesktopApp(
                 }
                 // Right Panel Area
                 Column(
-                    modifier = Modifier.weight(1f).fillMaxHeight()
+                    modifier = Modifier
+                        .weight(1f).fillMaxHeight()
+                        .border(BorderStroke(1.dp, Color.Black),
+                            shape = RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(16.dp))
                 ) {
                     // PROMPT BOX (added above the right panel)
                     if (finalPrompt != null) {
@@ -787,7 +804,7 @@ fun evaluateAnswerSheet(
             })
         })
         put("generationConfig", JSONObject().apply {
-            put("temperature", 0.3)
+            put("temperature", 0.0)
             put("topP", 0.8)
             put("topK", 40)
             put("maxOutputTokens", 4096)
