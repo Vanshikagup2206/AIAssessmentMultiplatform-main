@@ -1,7 +1,6 @@
 package com.vanshika.multiplatformproject
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -58,16 +57,23 @@ import javax.swing.UIManager.put
 import org.apache.poi.ss.usermodel.*
 import java.io.*
 import org.apache.tika.Tika
-import androidx.compose.foundation.Canvas
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import okhttp3.RequestBody.Companion.toRequestBody
 
 fun main() = application {
     val answer = "Student's Answer Here"
     val rubric = "Rubric Criteria Here"
     val selectedFiles = mapOf("Rubric" to "path/to/rubric.xlsx")
-    Window(onCloseRequest = ::exitApplication, title = "MultiPlatformProject") {
+    val imageBitmap = ImageIO.read(object {}.javaClass.getResourceAsStream("/edumark.png"))
+        .toComposeImageBitmap()
+    val iconPainter = BitmapPainter(imageBitmap)
+
+    Window(onCloseRequest = ::exitApplication, title = "MultiPlatformProject",
+
+        icon = iconPainter )
+
+    {
         DesktopApp(answer, rubric, selectedFiles)
     }
 }

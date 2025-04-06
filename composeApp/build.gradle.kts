@@ -19,21 +19,23 @@ kotlin {
         }
     }
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
+//    listOf(
+//        iosX64(),
+//        iosArm64(),
+//        iosSimulatorArm64()
+//    ).forEach { iosTarget ->
+//        iosTarget.binaries.framework {
+//            baseName = "ComposeApp"
+//            isStatic = true
+//        }
+//    }
 
     jvm("desktop")
 
     sourceSets {
-        val desktopMain by getting
+        val desktopMain by getting{
+            resources.srcDir("src/desktopMain/resources")
+        }
 
         androidMain.dependencies {
             implementation(compose.preview)
@@ -60,10 +62,7 @@ kotlin {
             implementation("org.apache.poi:poi-ooxml:5.2.3") // For DOCX files
             implementation("org.apache.pdfbox:pdfbox:2.0.27")// For PDF files
             implementation(compose.material) // For fallback if needed
-            // Image handling (to show extracted images)
             implementation("org.apache.commons:commons-io:1.3.2")
-
-
             implementation("com.squareup.okhttp3:okhttp:4.9.3") // For making API calls
             implementation("org.apache.poi:poi-ooxml:5.2.3")
             implementation("org.json:json:20231013")
@@ -128,8 +127,11 @@ compose.desktop {
             packageName = "com.vanshika.multiplatformproject"
             packageVersion = "1.0.0"
             windows {
-                iconFile.set(project.file("icon.ico"))
+                iconFile.set(file("icon.ico"))
             }
         }
     }
+}
+tasks.withType<Copy> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
