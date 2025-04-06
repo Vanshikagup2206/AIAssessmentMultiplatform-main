@@ -13,7 +13,7 @@ import java.time.Instant
 val apiKey = "AIzaSyD5rqCR7rWmllecnwiiZWHkgU1pqLdPJX8"
 val projectId = "edumark-ai-812f7"
 
-suspend fun saveEvaluationToFirestore(
+suspend fun saveEvaluationToFireStore(
     studentName: String,
     studentId: String,
     overallScore: String,
