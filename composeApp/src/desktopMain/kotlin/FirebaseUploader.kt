@@ -34,34 +34,6 @@ suspend fun saveEvaluationToFireStore(
             put("studentId", buildJsonObject { put("stringValue", studentId) })
             put("overallScore", buildJsonObject { put("stringValue", overallScore) })
             put("timestamp", buildJsonObject { put("stringValue", timestamp) })
-
-//            put("strengths", buildJsonObject {
-//                put("arrayValue", buildJsonObject {
-//                    put("values", JsonArray(strengths.map {
-//                        JsonObject(mapOf("stringValue" to JsonPrimitive(it)))
-//                    }))
-//                })
-//            })
-//
-//            put("improvementAreas", buildJsonObject {
-//                put("arrayValue", buildJsonObject {
-//                    put("values", JsonArray(improvementAreas.map {
-//                        JsonObject(mapOf("stringValue" to JsonPrimitive(it)))
-//                    }))
-//                })
-//            })
-//
-//            put("sectionScores", buildJsonObject {
-//                put("mapValue", buildJsonObject {
-//                    put("fields", buildJsonObject {
-//                        sectionScores.forEach { (section, score) ->
-//                            put(section, buildJsonObject {
-//                                put("stringValue", score)
-//                            })
-//                        }
-//                    })
-//                })
-//            })
         })
     }
 
