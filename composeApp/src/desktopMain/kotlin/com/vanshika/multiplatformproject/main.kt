@@ -108,11 +108,7 @@ fun DesktopApp(
     var studentName by remember { mutableStateOf("") }
     var studentId by remember { mutableStateOf("") }
     var overallScore by remember { mutableStateOf("") }
-    val strengths = listOf("Good Introduction", "Strong Conclusion")
-    val improvementAreas = listOf("Weak Methodology")
-    val sectionScores = mapOf("Introduction" to "7", "Method" to "5")
-
-
+    var isEvaluationDone by remember { mutableStateOf(false) }
 
     MaterialTheme {
         Column(
@@ -275,14 +271,42 @@ fun DesktopApp(
                                                 prompt = currentPrompt, // Pass the custom prompt
                                                 selectedFiles = selectedFiles
                                             ) { result ->
-                                                feedbackContent = result
-                                                isLoading = false
+//                                                feedbackContent = result
+//                                                isLoading = false
+//                                                // After AI completes
+//                                                isEvaluationDone = true
+                                                try {
+                                                    val jsonResponse = JSONObject(result)
+                                                    // Extract the overall score from AI response
+                                                    overallScore = jsonResponse.optString("overall_score", "0/100")
+
+                                                    // Also extract individual section scores if needed
+                                                    val sectionScores = mutableMapOf<String, String>()
+                                                    jsonResponse.optJSONArray("section_wise")?.let { sections ->
+                                                        for (i in 0 until sections.length()) {
+                                                            val section = sections.getJSONObject(i)
+                                                            sectionScores[section.getString("section")] = section.getString("section_score")
+                                                        }
+                                                    }
+
+                                                    feedbackContent = result
+                                                    isEvaluationDone = true
+                                                    isLoading = false
+
+                                                    // Show success message with score
+                                                    toastMessage = "Evaluation Complete! Score: $overallScore"
+                                                    showToast = true
+
+                                                } catch (e: Exception) {
+                                                    toastMessage = "Error parsing evaluation: ${e.message}"
+                                                    showToast = true
+                                                    isLoading = false
+                                                }
                                             }
                                             isReevaluation = false  // ✅ Reset after done
                                         }
 
                                     ) {
-//                                        Text("Evaluate with This Prompt")
                                         Text(if (isReevaluation) "Re-evaluate with This Prompt" else "Evaluate with This Prompt")
 
                                     }
@@ -296,13 +320,19 @@ fun DesktopApp(
                         if (studentName.isBlank()) {
                             toastMessage = "⚠ Please enter student name"
                             showToast = true
-                        } else {
+                        }
+                        if (!isEvaluationDone) {
+                            popupMessage = "⚠️ Please evaluate the answer before saving"
+                            showPopup = true
+                            return@Button
+                        }else {
                             coroutineScope.launch {
                                 try {
+
                                     saveEvaluationToFirestore(
                                         studentName = studentName,
                                         studentId = "STUDENT_${System.currentTimeMillis()}", // Add this parameter
-                                        overallScore = "overallScore",   // Add this parameter
+                                        overallScore = overallScore,   // Add this parameter
                                         onSuccess = {
                                             toastMessage = "✅ Saved to Firebase!"
                                             showToast = true
