@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module version="4">
+<module external.linked.project.id=":composeApp:main" external.linked.project.path="$MODULE_DIR$/../../../composeApp" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.type="sourceSet" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
+    <facet type="android" name="Android">
+      <configuration>
+        <option name="SELECTED_BUILD_VARIANT" value="debug" />
+        <option name="ALLOW_USER_CONFIGURATION" value="false" />
+        <option name="MANIFEST_FILE_RELATIVE_PATH" value="/src/androidMain/AndroidManifest.xml" />
+        <option name="RES_FOLDER_RELATIVE_PATH" value="/src/main/res" />
+        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/../../../composeApp/src/main/res;file://$MODULE_DIR$/../../../composeApp/src/androidMain/res;file://$MODULE_DIR$/../../../composeApp/src/debug/res;file://$MODULE_DIR$/../../../composeApp/src/androidDebug/res;file://$MODULE_DIR$/../../../composeApp/build/generated/res/resValues/debug" />
+        <option name="TEST_RES_FOLDERS_RELATIVE_PATH" value="" />
+        <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/src/main/assets" />
+      </configuration>
+    </facet>
     <facet type="kotlin-language" name="Kotlin">
       <configuration version="5" platform="JVM 11" allPlatforms="JVM [11]" useProjectSettings="false" isTestModule="false" externalProjectId=":composeApp" pureKotlinSourceFolders="D:\Projects\AIAssessmentMultiplatform-main\composeApp\src\androidDebug\kotlin;D:\Projects\AIAssessmentMultiplatform-main\composeApp\src\debug\kotlin;D:\Projects\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\androidDebugResourceAccessors;D:\Projects\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopTestResourceAccessors;D:\Projects\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopMainResourceAccessors;D:\Projects\AIAssessmentMultiplatform-main\composeApp\src\debug\java;D:\Projects\AIAssessmentMultiplatform-main\composeApp\src\desktopMain\kotlin;D:\Projects\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopMainResourceCollectors;D:\Projects\AIAssessmentMultiplatform-main\composeApp\src\desktopTest\kotlin">
         <dependsOnModuleNames>:composeApp:commonMain</dependsOnModuleNames>
@@ -22,5 +33,101 @@
         </compilerArguments>
       </configuration>
     </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_11">
+    <output url="file://$MODULE_DIR$/../../../composeApp/build/intermediates/javac/debug/classes" />
+    <output-test url="file://$MODULE_DIR$/../../../composeApp/build/intermediates/javac/debugUnitTest/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../composeApp/build/generated/ap_generated_sources/debug/out" />
+    <content url="file://$MODULE_DIR$/../../../composeApp/build/generated/assets/copyDebugComposeResourcesToAndroidAssets">
+      <sourceFolder url="file://$MODULE_DIR$/../../../composeApp/build/generated/assets/copyDebugComposeResourcesToAndroidAssets" type="java-resource" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../composeApp/build/generated/assets/debugAssetsCopyForAGP" />
+    <content url="file://$MODULE_DIR$/../../../composeApp/build/generated/compose/resourceGenerator/kotlin/androidDebugResourceAccessors" />
+    <content url="file://$MODULE_DIR$/../../../composeApp/build/generated/compose/resourceGenerator/kotlin/androidMainResourceAccessors" />
+    <content url="file://$MODULE_DIR$/../../../composeApp/build/generated/compose/resourceGenerator/kotlin/androidMainResourceCollectors">
+      <sourceFolder url="file://$MODULE_DIR$/../../../composeApp/build/generated/compose/resourceGenerator/kotlin/androidMainResourceCollectors" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../composeApp/build/generated/res/resValues/debug">
+      <sourceFolder url="file://$MODULE_DIR$/../../../composeApp/build/generated/res/resValues/debug" type="java-resource" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../composeApp/src/androidDebug" />
+    <content url="file://$MODULE_DIR$/../../../composeApp/src/androidMain">
+      <sourceFolder url="file://$MODULE_DIR$/../../../composeApp/src/androidMain/kotlin" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../composeApp/src/androidMain/res" type="java-resource" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../composeApp/src/debug" />
+    <content url="file://$MODULE_DIR$/../../../composeApp/src/main" />
+    <orderEntry type="jdk" jdkName="Android API 34, extension level 7 Platform" jdkType="Android SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="MultiPlatformProject.composeApp.commonMain" />
+    <orderEntry type="library" name="Gradle: androidx.annotation:annotation-jvm:1.8.0" level="project" />
+    <orderEntry type="module-library">
+      <library name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:2.1.0">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.1.0/85f8b81009cda5890e54ba67d64b5e599c645020/kotlin-stdlib-2.1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.1.0/2ad14aed781c4a73ed4dbb421966d408a0a06686/kotlin-stdlib-2.1.0-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.1.0/a6b63e055817a125d4d04fc586eb178a8060078d/kotlin-stdlib-2.1.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Gradle: org.jetbrains:annotations:23.0.0">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/23.0.0/8cc20c07506ec18e0834947b84a864bfc094484e/annotations-23.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/23.0.0/41442a550d78cb59a601c1d38603f6ab5497f93c/annotations-23.0.0-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/23.0.0/ca5088d615accaabd2aa956b10b236a4e75cfccb/annotations-23.0.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.arch.core:core-common:2.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-common-jvm:2.8.5" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.collection:collection-jvm:1.4.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-tooling-preview-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.runtime:runtime-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.annotation:annotation-experimental:1.4.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.activity:activity-compose:1.9.3@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.activity:activity-ktx:1.9.3@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.activity:activity:1.9.3@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.core:core:1.13.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-runtime-android:2.8.5@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.versionedparcelable:versionedparcelable:1.1.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-viewmodel-android:2.8.5@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.5@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.core:core-ktx:1.13.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-livedata-core:2.8.5@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.savedstate:savedstate:1.2.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.5@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.5@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.savedstate:savedstate-ktx:1.2.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.runtime:runtime-saveable-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-geometry-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-graphics-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-unit-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-text-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-util-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-runtime-compose-android:2.8.5@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.foundation:foundation-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.animation:animation-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.animation:animation-core-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.foundation:foundation-layout-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.material3:material3-android:1.3.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.material:material-icons-core-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.material:material-ripple-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.components:components-resources-android:1.7.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.components:components-ui-tooling-preview-android:1.7.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-tooling-android:1.7.1@aar" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-tooling-data-android:1.7.1@aar" level="project" />
   </component>
 </module>

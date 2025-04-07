@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jetbrains.compose.material:material-ripple:commonMain:1.7.0" type="kotlin.common">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/.kotlin/metadata/kotlinTransformedMetadataLibraries/org.jetbrains.compose.material-material-ripple-1.7.0-commonMain-hYj_-Q.klib!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.material/material-ripple/1.7.0/55d680ea323b5f020cf0b21ae1ce2d8c019a3664/material-ripple-1.7.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

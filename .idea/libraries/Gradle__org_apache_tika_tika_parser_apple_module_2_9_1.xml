@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.tika:tika-parser-apple-module:2.9.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-apple-module/2.9.1/919fd2869c4bdccb0d16438eabfd3f516cc5c1db/tika-parser-apple-module-2.9.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-apple-module/2.9.1/7ea0126f49fc1a4e31ff844d103dad316fc3629e/tika-parser-apple-module-2.9.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

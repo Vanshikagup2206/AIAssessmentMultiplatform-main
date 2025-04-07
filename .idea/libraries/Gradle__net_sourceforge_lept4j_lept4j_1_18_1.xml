@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: net.sourceforge.lept4j:lept4j:1.18.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sourceforge.lept4j/lept4j/1.18.1/f98a8c60db74964c16d5e28d0cd8804c41da1dc7/lept4j-1.18.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sourceforge.lept4j/lept4j/1.18.1/3eff2b8bb515902beec0f6037b7da1538ad61a78/lept4j-1.18.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.tika:tika-parser-mail-module:2.9.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-mail-module/2.9.1/37fd1b51841e97678aff2378b7fd131f47555d4a/tika-parser-mail-module-2.9.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-mail-module/2.9.1/a33fe5aea5cf2e5e759ba71a1a55b8faa18f368a/tika-parser-mail-module-2.9.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

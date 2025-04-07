@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.tika:tika-parser-microsoft-module:2.9.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-microsoft-module/2.9.1/eb4150db6d63709abc8fc8989838a5b404992a1b/tika-parser-microsoft-module-2.9.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-microsoft-module/2.9.1/5b74cb6e5caeea60ae20f4dcbee71f48ddd328c3/tika-parser-microsoft-module-2.9.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

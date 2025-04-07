@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.tika:tika-parser-zip-commons:2.9.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-zip-commons/2.9.1/2c06ac859bc325a8468a98cb5714b3c4471427af/tika-parser-zip-commons-2.9.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-zip-commons/2.9.1/17a07bbdf19c1177d24850455614e3eee26aec78/tika-parser-zip-commons-2.9.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

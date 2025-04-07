@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.tika:tika-parser-cad-module:2.9.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-cad-module/2.9.1/6f58d553aff987cbd42c7e0d16971c25d8bde927/tika-parser-cad-module-2.9.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-cad-module/2.9.1/c6088986dd4844d99bb56c5bbf33c6a88fe43e8e/tika-parser-cad-module-2.9.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

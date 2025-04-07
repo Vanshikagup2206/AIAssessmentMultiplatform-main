@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.lifecycle:lifecycle-runtime-compose-desktop:2.8.5">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-runtime-compose-desktop/2.8.5/f116f1c8af14d31003f7a412d46c5a33c031ef9/lifecycle-runtime-compose-desktop-2.8.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-runtime-compose-desktop/2.8.5/5395cf5c0138c300567d8d10292907de1d09fc04/lifecycle-runtime-compose-desktop-2.8.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

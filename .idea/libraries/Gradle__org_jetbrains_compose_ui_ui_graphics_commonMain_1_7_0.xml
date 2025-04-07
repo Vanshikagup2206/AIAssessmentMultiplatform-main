@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jetbrains.compose.ui:ui-graphics:commonMain:1.7.0" type="kotlin.common">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/.kotlin/metadata/kotlinTransformedMetadataLibraries/org.jetbrains.compose.ui-ui-graphics-1.7.0-commonMain-nWZcXg.klib!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.ui/ui-graphics/1.7.0/bda75d04ae2ef6936546dd964793f3a120782761/ui-graphics-1.7.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

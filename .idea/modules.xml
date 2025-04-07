@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/MultiPlatformProject.iml" filepath="$PROJECT_DIR$/.idea/MultiPlatformProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.iml" filepath="$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.commonMain.iml" filepath="$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.commonMain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.commonTest.iml" filepath="$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.commonTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.desktopMain.iml" filepath="$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.desktopMain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.desktopTest.iml" filepath="$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.desktopTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.main.iml" filepath="$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/composeApp/MultiPlatformProject.composeApp.unitTest.iml" />
+    </modules>
+  </component>
+</project>

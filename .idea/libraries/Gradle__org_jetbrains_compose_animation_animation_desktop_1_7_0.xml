@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jetbrains.compose.animation:animation-desktop:1.7.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.animation/animation-desktop/1.7.0/2c5c8a0279b37285f6fa2e65affab9a5ca3d2e05/animation-desktop-1.7.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.animation/animation-desktop/1.7.0/9a48ebb0beeeaf1ba7793b0f0a1f7b1444bba6d7/animation-desktop-1.7.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

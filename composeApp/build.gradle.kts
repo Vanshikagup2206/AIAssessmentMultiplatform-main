@@ -121,19 +121,22 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.vanshika.multiplatformproject.MainKt"
-
+        mainClass = "com.vanshika.multiplatformproject.MainKt" // ✅ Main class
         nativeDistributions {
-//            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            targetFormats(org.jetbrains.compose.desktop.application.dsl.TargetFormat.Exe)
+            targetFormats(
+                TargetFormat.Dmg,
+                TargetFormat.Msi,
+                TargetFormat.Deb
+            ) // ✅ Targeting Windows .exe
             packageName = "com.vanshika.multiplatformproject"
             packageVersion = "1.0.0"
             windows {
-                iconFile.set(file("src/desktopMain/resources/edumark_icon.ico"))
+                iconFile.set(file("src/desktopMain/resources/edumark_icon.ico")) // ✅ Optional app icon
             }
         }
     }
 }
+
 tasks.withType<Copy> {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
