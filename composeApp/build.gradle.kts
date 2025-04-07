@@ -66,7 +66,6 @@ kotlin {
             implementation(compose.material) // For fallback if needed
             implementation("org.apache.commons:commons-io:1.3.2")
             implementation("com.squareup.okhttp3:okhttp:4.9.3") // For making API calls
-            implementation("org.apache.poi:poi-ooxml:5.2.3")
             implementation("org.json:json:20231013")
             implementation("org.apache.logging.log4j:log4j-core:2.20.0")
             implementation("org.apache.logging.log4j:log4j-api:2.20.0")
@@ -121,22 +120,20 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.vanshika.multiplatformproject.MainKt" // ✅ Main class
+        mainClass = "com.vanshika.multiplatformproject.MainKt"
+
         nativeDistributions {
-            targetFormats(
-                TargetFormat.Dmg,
-                TargetFormat.Msi,
-                TargetFormat.Deb
-            ) // ✅ Targeting Windows .exe
+//            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Exe, TargetFormat.Dmg, TargetFormat.Deb)
+//            targetFormats(org.jetbrains.compose.desktop.application.dsl.TargetFormat.Exe)
             packageName = "com.vanshika.multiplatformproject"
             packageVersion = "1.0.0"
             windows {
-                iconFile.set(file("src/desktopMain/resources/edumark_icon.ico")) // ✅ Optional app icon
+                iconFile.set(file("src/desktopMain/resources/edumark_icon.ico"))
             }
         }
     }
 }
-
 tasks.withType<Copy> {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

@@ -4,41 +4,7 @@
             "outputFile": "com.vanshika.multiplatformproject.composeApp-mergeDebugResources-43:/values-km/values-km.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\HP\\.gradle\\caches\\8.9\\transforms\\003c2e375251469c6e0374f095c1645b\\transformed\\foundation-release\\res\\values-km\\values-km.xml",
-                    "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,146",
-                        "endColumns": "90,91",
-                        "endOffsets": "141,233"
-                    },
-                    "to": {
-                        "startLines": "85,86",
-                        "startColumns": "4,4",
-                        "startOffsets": "8725,8816",
-                        "endColumns": "90,91",
-                        "endOffsets": "8811,8903"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\HP\\.gradle\\caches\\8.9\\transforms\\d60d5506a7f643365f74e5b903b2e0bf\\transformed\\core-1.13.1\\res\\values-km\\values-km.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,150,253,351,451,552,664,776",
-                        "endColumns": "94,102,97,99,100,111,111,100",
-                        "endOffsets": "145,248,346,446,547,659,771,872"
-                    },
-                    "to": {
-                        "startLines": "2,3,4,5,6,7,8,81",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "105,200,303,401,501,602,714,8356",
-                        "endColumns": "94,102,97,99,100,111,111,100",
-                        "endOffsets": "195,298,396,496,597,709,821,8452"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\HP\\.gradle\\caches\\8.9\\transforms\\534778033f31cb992d103feae1641f7d\\transformed\\material3-release\\res\\values-km\\values-km.xml",
+                    "source": "C:\\Users\\tanve\\.gradle\\caches\\8.13\\transforms\\b91edc9ece353e6f866e8972c97d79be\\transformed\\material3-release\\res\\values-km\\values-km.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -55,7 +21,24 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\HP\\.gradle\\caches\\8.9\\transforms\\11c0808957ff08a9613644017c0a7deb\\transformed\\ui-release\\res\\values-km\\values-km.xml",
+                    "source": "C:\\Users\\tanve\\.gradle\\caches\\8.13\\transforms\\3b45eee28daa0131018a45337771c403\\transformed\\core-1.13.1\\res\\values-km\\values-km.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,150,253,351,451,552,664,776",
+                        "endColumns": "94,102,97,99,100,111,111,100",
+                        "endOffsets": "145,248,346,446,547,659,771,872"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,81",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "105,200,303,401,501,602,714,8356",
+                        "endColumns": "94,102,97,99,100,111,111,100",
+                        "endOffsets": "195,298,396,496,597,709,821,8452"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\tanve\\.gradle\\caches\\8.13\\transforms\\5a04cce9d4931c41182f2c7c15fb6981\\transformed\\ui-release\\res\\values-km\\values-km.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -69,6 +52,23 @@
                         "startOffsets": "826,911,991,1095,1193,1281,1365,7726,7811,7898,7978,8063,8139,8213,8285,8457,8541,8607",
                         "endColumns": "84,79,103,97,87,83,82,84,86,79,84,75,73,71,70,83,65,117",
                         "endOffsets": "906,986,1090,1188,1276,1360,1443,7806,7893,7973,8058,8134,8208,8280,8351,8536,8602,8720"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\tanve\\.gradle\\caches\\8.13\\transforms\\a0ad28d9d44b7f5eb8ce7865aeef873a\\transformed\\foundation-release\\res\\values-km\\values-km.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,146",
+                        "endColumns": "90,91",
+                        "endOffsets": "141,233"
+                    },
+                    "to": {
+                        "startLines": "85,86",
+                        "startColumns": "4,4",
+                        "startOffsets": "8725,8816",
+                        "endColumns": "90,91",
+                        "endOffsets": "8811,8903"
                     }
                 }
             ]

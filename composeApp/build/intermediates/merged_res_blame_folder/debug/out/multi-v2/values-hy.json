@@ -4,24 +4,7 @@
             "outputFile": "com.vanshika.multiplatformproject.composeApp-mergeDebugResources-43:/values-hy/values-hy.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\HP\\.gradle\\caches\\8.9\\transforms\\003c2e375251469c6e0374f095c1645b\\transformed\\foundation-release\\res\\values-hy\\values-hy.xml",
-                    "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,140",
-                        "endColumns": "84,88",
-                        "endOffsets": "135,224"
-                    },
-                    "to": {
-                        "startLines": "85,86",
-                        "startColumns": "4,4",
-                        "startOffsets": "8769,8854",
-                        "endColumns": "84,88",
-                        "endOffsets": "8849,8938"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\HP\\.gradle\\caches\\8.9\\transforms\\534778033f31cb992d103feae1641f7d\\transformed\\material3-release\\res\\values-hy\\values-hy.xml",
+                    "source": "C:\\Users\\tanve\\.gradle\\caches\\8.13\\transforms\\b91edc9ece353e6f866e8972c97d79be\\transformed\\material3-release\\res\\values-hy\\values-hy.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -38,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\HP\\.gradle\\caches\\8.9\\transforms\\d60d5506a7f643365f74e5b903b2e0bf\\transformed\\core-1.13.1\\res\\values-hy\\values-hy.xml",
+                    "source": "C:\\Users\\tanve\\.gradle\\caches\\8.13\\transforms\\3b45eee28daa0131018a45337771c403\\transformed\\core-1.13.1\\res\\values-hy\\values-hy.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -55,7 +38,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\HP\\.gradle\\caches\\8.9\\transforms\\11c0808957ff08a9613644017c0a7deb\\transformed\\ui-release\\res\\values-hy\\values-hy.xml",
+                    "source": "C:\\Users\\tanve\\.gradle\\caches\\8.13\\transforms\\5a04cce9d4931c41182f2c7c15fb6981\\transformed\\ui-release\\res\\values-hy\\values-hy.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -69,6 +52,23 @@
                         "startOffsets": "825,924,1006,1100,1200,1283,1365,7743,7838,7920,8005,8093,8167,8244,8323,8501,8582,8651",
                         "endColumns": "98,81,93,99,82,81,85,94,81,84,87,73,76,78,76,80,68,117",
                         "endOffsets": "919,1001,1095,1195,1278,1360,1446,7833,7915,8000,8088,8162,8239,8318,8395,8577,8646,8764"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\tanve\\.gradle\\caches\\8.13\\transforms\\a0ad28d9d44b7f5eb8ce7865aeef873a\\transformed\\foundation-release\\res\\values-hy\\values-hy.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,140",
+                        "endColumns": "84,88",
+                        "endOffsets": "135,224"
+                    },
+                    "to": {
+                        "startLines": "85,86",
+                        "startColumns": "4,4",
+                        "startOffsets": "8769,8854",
+                        "endColumns": "84,88",
+                        "endOffsets": "8849,8938"
                     }
                 }
             ]
