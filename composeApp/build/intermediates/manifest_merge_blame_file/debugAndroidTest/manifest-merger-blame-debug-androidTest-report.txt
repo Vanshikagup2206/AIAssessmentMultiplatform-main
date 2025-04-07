@@ -3,30 +3,30 @@
 3    package="com.vanshika.multiplatformproject.test" >
 4
 5    <uses-sdk
-5-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest14233532692920919632.xml:5:5-74
+5-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest17244301902656722759.xml:5:5-74
 6        android:minSdkVersion="21"
-6-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest14233532692920919632.xml:5:15-41
+6-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest17244301902656722759.xml:5:15-41
 7        android:targetSdkVersion="34" />
-7-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest14233532692920919632.xml:5:42-71
+7-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest17244301902656722759.xml:5:42-71
 8
 9    <instrumentation
-9-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest14233532692920919632.xml:11:5-15:83
+9-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest17244301902656722759.xml:11:5-15:83
 10        android:name="android.test.InstrumentationTestRunner"
-10-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest14233532692920919632.xml:11:22-75
+10-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest17244301902656722759.xml:11:22-75
 11        android:functionalTest="false"
-11-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest14233532692920919632.xml:14:22-52
+11-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest17244301902656722759.xml:14:22-52
 12        android:handleProfiling="false"
-12-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest14233532692920919632.xml:13:22-53
+12-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest17244301902656722759.xml:13:22-53
 13        android:label="Tests for com.vanshika.multiplatformproject"
-13-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest14233532692920919632.xml:15:22-81
+13-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest17244301902656722759.xml:15:22-81
 14        android:targetPackage="com.vanshika.multiplatformproject" />
-14-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest14233532692920919632.xml:12:22-79
+14-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest17244301902656722759.xml:12:22-79
 15
 16    <application android:debuggable="true" >
-16-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest14233532692920919632.xml:7:5-9:19
+16-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest17244301902656722759.xml:7:5-9:19
 17        <uses-library android:name="android.test.runner" />
-17-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest14233532692920919632.xml:8:9-60
-17-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest14233532692920919632.xml:8:23-57
+17-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest17244301902656722759.xml:8:9-60
+17-->D:\AIAssessmentMultiplatform-main\composeApp\build\intermediates\tmp\manifest\androidTest\debug\tempFile1ProcessTestManifest17244301902656722759.xml:8:23-57
 18    </application>
 19
 20</manifest>
