@@ -1,32 +1,31 @@
-name: Build Windows EXE
+name: Build Desktop App
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    tags:
+      - 'v*'  # Only on version tags like v1.0
 
 jobs:
   build:
-    runs-on: windows-latest  # Windows runner required for EXE
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    runs-on: ubuntu-latest
 
-      - name: Set up JDK 17
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
           distribution: 'temurin'
+          java-version: 17
 
-      - name: Grant gradlew permissions
-        run: chmod +x gradlew
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
 
-      - name: Build EXE
-        run: ./gradlew :desktop:packageExe  # Note: Your module is named "desktop"
+      - name: Build desktop app
+        run: ./gradlew packageReleaseDistributionForCurrentOS
 
-      - name: Upload EXE
-        uses: actions/upload-artifact@v4
+      - name: Upload build
+        uses: actions/upload-artifact@v3
         with:
-          name: YourApp.exe
-          path: desktop/build/compose/binaries/main/release/com.vanshika.multiplatformproject.exe
+          name: desktop-app
+          path: composeApp/build/compose/binaries/main-release/composeApp/
