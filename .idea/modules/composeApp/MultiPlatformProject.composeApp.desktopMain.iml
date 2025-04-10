@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module version="4">
+<module external.linked.project.id=":composeApp:desktopMain" external.linked.project.path="$MODULE_DIR$/../../../composeApp" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="MultiPlatformProject" external.system.module.type="sourceSet" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
       <configuration version="5" platform="JVM 17" allPlatforms="JVM [17]" useProjectSettings="false" isTestModule="false" externalProjectId=":composeApp" pureKotlinSourceFolders="D:\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\androidDebugResourceAccessors;D:\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopMainResourceCollectors;D:\AIAssessmentMultiplatform-main\composeApp\src\debug\java;D:\AIAssessmentMultiplatform-main\composeApp\src\debug\kotlin;D:\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopMainResourceAccessors;D:\AIAssessmentMultiplatform-main\composeApp\src\desktopTest\kotlin;D:\AIAssessmentMultiplatform-main\composeApp\src\androidDebug\kotlin;D:\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopTestResourceAccessors;D:\AIAssessmentMultiplatform-main\composeApp\src\desktopMain\kotlin">
@@ -22,5 +22,212 @@
         </compilerArguments>
       </configuration>
     </facet>
+  </component>
+  <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/../../../composeApp/build/classes/kotlin/desktop/main" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../composeApp/build/generated/compose/resourceGenerator/assembledResources/desktopMain">
+      <sourceFolder url="file://$MODULE_DIR$/../../../composeApp/build/generated/compose/resourceGenerator/assembledResources/desktopMain" type="java-resource" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../composeApp/build/generated/compose/resourceGenerator/kotlin/desktopMainResourceAccessors" />
+    <content url="file://$MODULE_DIR$/../../../composeApp/build/generated/compose/resourceGenerator/kotlin/desktopMainResourceCollectors">
+      <sourceFolder url="file://$MODULE_DIR$/../../../composeApp/build/generated/compose/resourceGenerator/kotlin/desktopMainResourceCollectors" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../composeApp/src/desktopMain">
+      <sourceFolder url="file://$MODULE_DIR$/../../../composeApp/src/desktopMain/kotlin" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../composeApp/src/desktopMain/resources" type="java-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="MultiPlatformProject.composeApp.commonMain" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-viewmodel-compose:aar:2.6.2" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-runtime-compose:aar:2.6.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.okhttp3:okhttp:4.9.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:2.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: net.sourceforge.tess4j:tess4j:5.8.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-simple:2.0.12" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parsers-standard-package:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.poi:poi-ooxml:5.2.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.pdfbox:pdfbox:2.0.29" level="project" />
+    <orderEntry type="library" name="Gradle: org.json:json:20231013" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-core:2.20.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-api:2.20.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.10" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-core:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-viewmodel-savedstate:aar:2.6.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.skiko:skiko-awt-runtime-windows-x64:0.8.15" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-viewmodel-ktx:aar:2.6.2" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-common-java8:2.6.2" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui:aar:1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.annotation:annotation-experimental:aar:1.4.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.runtime:runtime:aar:1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.annotation:annotation-experimental:aar:1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-runtime-ktx:aar:2.6.2" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-client-cio-jvm:2.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-client-content-negotiation-jvm:2.3.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: androidx.lifecycle:lifecycle-viewmodel-compose-desktop:2.8.5" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-serialization-kotlinx-json-jvm:2.3.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: androidx.lifecycle:lifecycle-runtime-compose-desktop:2.8.5" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-client-core-jvm:2.3.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.material3:material3-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.material:material-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.foundation:foundation-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.ui:ui-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.runtime:runtime-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.components:components-resources-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.components:components-ui-tooling-preview-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.okio:okio-jvm:3.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.5.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:23.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.pdfbox:pdfbox-tools:2.0.29" level="project" />
+    <orderEntry type="library" name="Gradle: net.sourceforge.lept4j:lept4j:1.18.1" level="project" />
+    <orderEntry type="library" name="Gradle: net.java.dev.jna:jna:5.13.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.jai-imageio:jai-imageio-core:1.4.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.pdfbox:jbig2-imageio:3.0.4" level="project" />
+    <orderEntry type="library" name="Gradle: commons-io:commons-io:2.14.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jboss:jboss-vfs:3.2.17.Final" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:2.0.12" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-cad-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-microsoft-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-pdf-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-miscoffice-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-image-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-code-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-mail-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:jcl-over-slf4j:2.0.9" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-news-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-webarchive-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-apple-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-pkg-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-audiovideo-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-crypto-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-digest-commons:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-font-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-html-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.core:core-ktx:aar:1.13.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-ocr-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-text-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-xml-module:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-xmp-commons:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.gagravarr:vorbis-java-tika:0.8" level="project" />
+    <orderEntry type="library" name="Gradle: org.gagravarr:vorbis-java-core:0.8" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.poi:poi:5.2.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.poi:poi-ooxml-lite:5.2.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.xmlbeans:xmlbeans:5.1.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.commons:commons-compress:1.24.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.virtuald:curvesapi:1.07" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.commons:commons-collections4:4.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.pdfbox:fontbox:2.0.29" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.24" level="project" />
+    <orderEntry type="library" name="Gradle: commons-logging:commons-logging:1.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.10.1" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-livedata-core:aar:2.6.2" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-viewmodel:aar:2.6.2" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.core:core-ktx:aar:1.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.savedstate:savedstate:aar:1.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.annotation:annotation:1.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-common:2.6.2" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.runtime:runtime-saveable:aar:1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-text:aar:1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-graphics:aar:1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-unit:aar:1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.compose.ui:ui-geometry:aar:1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.lifecycle:lifecycle-runtime:aar:2.6.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.10.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.desktop:desktop-jvm:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.pdfbox:pdfbox-debugger:2.0.29" level="project" />
+    <orderEntry type="library" name="Gradle: org.jboss.logging:jboss-logging:3.1.4.GA" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.15.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.15.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.poi:poi-scratchpad:5.2.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-mail-commons:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.tika:tika-parser-zip-commons:2.9.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.healthmarketscience.jackcess:jackcess:4.0.5" level="project" />
+    <orderEntry type="library" name="Gradle: commons-codec:commons-codec:1.16.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.bouncycastle:bcmail-jdk18on:1.76" level="project" />
+    <orderEntry type="library" name="Gradle: com.healthmarketscience.jackcess:jackcess-encrypt:4.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.bouncycastle:bcprov-jdk18on:1.76" level="project" />
+    <orderEntry type="library" name="Gradle: com.pff:java-libpst:0.9.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.commons:commons-lang3:3.13.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.core:core:aar:1.13.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.glassfish.jaxb:jaxb-runtime:2.3.6" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.pdfbox:jempbox:1.8.17" level="project" />
+    <orderEntry type="library" name="Gradle: com.drewnoakes:metadata-extractor:2.18.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.codelibs:jhighlight:1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.epam:parso:2.0.14" level="project" />
+    <orderEntry type="library" name="Gradle: org.tallison:jmatio:1.5" level="project" />
+    <orderEntry type="library" name="Gradle: org.ccil.cowan.tagsoup:tagsoup:1.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.ow2.asm:asm:9.6" level="project" />
+    <orderEntry type="library" name="Gradle: com.rometools:rome:2.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.netpreserve:jwarc:0.28.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.googlecode.plist:dd-plist:1.27" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlinx:atomicfu-jvm:0.23.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.tukaani:xz:1.9" level="project" />
+    <orderEntry type="library" name="Gradle: org.brotli:dec:0.1.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.junrar:junrar:7.5.5" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.versionedparcelable:versionedparcelable:aar:1.1.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.commons:commons-exec:1.3" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose-desktop:2.8.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.albfernandez:juniversalchardet:2.4.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.commons:commons-csv:1.10.0" level="project" />
+    <orderEntry type="library" name="Gradle: xerces:xercesImpl:2.12.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.pdfbox:xmpbox:2.0.29" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.commons:commons-math3:3.6.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.zaxxer:SparseBitSet:1.2" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.core:core:aar:1.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.arch.core:core-common:2.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-http-cio-jvm:2.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-network-tls-jvm:2.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-websockets-jvm:2.3.1" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-serialization-jvm:2.3.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: androidx.lifecycle:lifecycle-viewmodel-desktop:2.8.5" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-serialization-kotlinx-jvm:2.3.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: androidx.lifecycle:lifecycle-common-jvm:2.8.5" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-http-jvm:2.3.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: androidx.compose.runtime:runtime-desktop:1.6.5" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-websocket-serialization-jvm:2.3.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: androidx.annotation:annotation-jvm:1.8.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-events-jvm:2.3.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: androidx.lifecycle:lifecycle-runtime-desktop:2.8.5" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.material:material-ripple-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.material:material-icons-core-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.ui:ui-text-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.ui:ui-graphics-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.animation:animation-core-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.animation:animation-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.skiko:skiko-awt:0.8.15" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.runtime:runtime-saveable-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.ui:ui-unit-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.ui:ui-geometry-desktop:1.7.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: com.sun.activation:jakarta.activation:1.2.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.ui:ui-util-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.5.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.15.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.james:apache-mime4j-dom:0.8.9" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.james:apache-mime4j-core:0.8.9" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: androidx.collection:collection-jvm:1.4.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.bouncycastle:bcpkix-jdk18on:1.76" level="project" />
+    <orderEntry type="library" name="Gradle: org.bouncycastle:bcutil-jdk18on:1.76" level="project" />
+    <orderEntry type="library" name="Gradle: jakarta.xml.bind:jakarta.xml.bind-api:2.3.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.glassfish.jaxb:txw2:2.3.6" level="project" />
+    <orderEntry type="library" name="Gradle: com.sun.istack:istack-commons-runtime:3.0.12" level="project" />
+    <orderEntry type="library" name="Gradle: com.adobe.xmp:xmpcore:6.1.11" level="project" />
+    <orderEntry type="library" name="Gradle: com.rometools:rome-utils:2.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jdom:jdom2:2.0.6.1" level="project" />
+    <orderEntry type="library" name="Gradle: xml-apis:xml-apis:1.4.01" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.versionedparcelable:versionedparcelable:aar:1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.ui:ui-tooling-preview-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: androidx.collection:collection:1.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-network-jvm:2.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-utils-jvm:2.3.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.compose.foundation:foundation-layout-desktop:1.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.ktor:ktor-io-jvm:2.3.1" level="project" />
   </component>
 </module>

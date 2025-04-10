@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jetbrains.compose.components:components-resources:blockingMain:1.7.0" type="kotlin.common">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/.kotlin/metadata/kotlinTransformedMetadataLibraries/org.jetbrains.compose.components-components-resources-1.7.0-blockingMain-Tn2Qyw.klib!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.components/components-resources/1.7.0/5709a3441c635f6c50229d36f6a1c16e487dd600/components-resources-1.7.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

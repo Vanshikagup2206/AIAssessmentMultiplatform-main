@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.tika:tika-parser-crypto-module:2.9.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-crypto-module/2.9.1/2deb890f25ddd3f1aaca836dfcaef467f7a89849/tika-parser-crypto-module-2.9.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-crypto-module/2.9.1/9714f4b4e42c4cc0cbb43ea9a433a075e518ee08/tika-parser-crypto-module-2.9.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

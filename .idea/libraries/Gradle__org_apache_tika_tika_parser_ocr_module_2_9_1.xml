@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.tika:tika-parser-ocr-module:2.9.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-ocr-module/2.9.1/302c767b655f926146a0285aeee3e15da698e049/tika-parser-ocr-module-2.9.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-ocr-module/2.9.1/602b07e6f05daaa26c21cb37f8c728f00e29bc87/tika-parser-ocr-module-2.9.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

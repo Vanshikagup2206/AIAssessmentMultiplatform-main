@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.tika:tika-parser-webarchive-module:2.9.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-webarchive-module/2.9.1/4e57ac48e1e4e11bb59fae5f312612c4afb5f8ac/tika-parser-webarchive-module-2.9.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tika/tika-parser-webarchive-module/2.9.1/ec168e6eb4ae5269646bd3f205281c14e4ab3288/tika-parser-webarchive-module-2.9.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

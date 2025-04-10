@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jetbrains.compose.material3:material3-desktop:1.7.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.material3/material3-desktop/1.7.0/7bcb77d4291ab8cf77ff225e8108ad2a4998c423/material3-desktop-1.7.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.compose.material3/material3-desktop/1.7.0/1bd33cec99ddf873feecb0875ec864b415f2b40/material3-desktop-1.7.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
