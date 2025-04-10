@@ -1,2 +1,2 @@
-JAVA_VERSION="24"
+JAVA_VERSION="17.0.14"
 MODULES="java.base java.datatransfer java.xml java.prefs java.desktop java.logging jdk.crypto.ec"

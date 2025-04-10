@@ -1,4 +1,0 @@
-#Mon Apr 07 12:24:29 IST 2025
-base.0=D\:\\AIAssessmentMultiplatform-main\\composeApp\\build\\intermediates\\dex\\debugAndroidTest\\mergeProjectDexDebugAndroidTest\\0\\classes.dex
-path.0=0/classes.dex
-renamed.0=classes.dex

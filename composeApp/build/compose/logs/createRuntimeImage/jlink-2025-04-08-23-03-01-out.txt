@@ -1,0 +1,12 @@
+Error: Module jdk not found
+java.lang.module.FindException: Module jdk not found
+	at java.base/java.lang.module.Resolver.findFail(Resolver.java:893)
+	at java.base/java.lang.module.Resolver.resolve(Resolver.java:129)
+	at java.base/java.lang.module.Configuration.resolve(Configuration.java:421)
+	at java.base/java.lang.module.Configuration.resolve(Configuration.java:255)
+	at jdk.jlink/jdk.tools.jlink.internal.Jlink$JlinkConfiguration.resolve(Jlink.java:217)
+	at jdk.jlink/jdk.tools.jlink.internal.JlinkTask.createImageProvider(JlinkTask.java:536)
+	at jdk.jlink/jdk.tools.jlink.internal.JlinkTask.createImage(JlinkTask.java:424)
+	at jdk.jlink/jdk.tools.jlink.internal.JlinkTask.run(JlinkTask.java:276)
+	at jdk.jlink/jdk.tools.jlink.internal.Main.run(Main.java:55)
+	at jdk.jlink/jdk.tools.jlink.internal.Main.main(Main.java:33)

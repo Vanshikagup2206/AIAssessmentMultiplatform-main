@@ -64,17 +64,18 @@ import javax.swing.UIManager.put
 import kotlinx.coroutines.delay  // THIS IS THE CRITICAL MISSING IMPORT
 
 fun main() = application {
+    println("💡 App Started!") // Debug
     val answer = "Student's Answer Here"
     val rubric = "Rubric Criteria Here"
     val selectedFiles = mapOf("Rubric" to "path/to/rubric.xlsx")
-    val imageStream = object {}.javaClass.getResourceAsStream("/edumark.png")
-        ?: throw IllegalStateException("Icon PNG not found in resources!")
-    val awtImage: BufferedImage = ImageIO.read(imageStream)
-    val iconPainter = BitmapPainter(awtImage.toComposeImageBitmap())
+//    val imageStream = object {}.javaClass.getResourceAsStream("/edumark.png")
+//        ?: throw IllegalStateException("Icon PNG not found in resources!")
+//    val awtImage: BufferedImage = ImageIO.read(imageStream)
+//    val iconPainter = BitmapPainter(awtImage.toComposeImageBitmap())
 
     Window(
         onCloseRequest = ::exitApplication, title = "EDUMARK-AI",
-        icon = iconPainter
+//        icon = iconPainter
     )
     {
         var isLoggedIn by remember { mutableStateOf(false) }

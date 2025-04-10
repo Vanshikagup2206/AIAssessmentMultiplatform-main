@@ -2,7 +2,7 @@
 <module version="4">
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="5" platform="JVM 11" allPlatforms="JVM [11]" useProjectSettings="false" isTestModule="true" externalProjectId=":composeApp" pureKotlinSourceFolders="D:\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\androidDebugResourceAccessors;D:\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopMainResourceCollectors;D:\AIAssessmentMultiplatform-main\composeApp\src\debug\java;D:\AIAssessmentMultiplatform-main\composeApp\src\debug\kotlin;D:\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopMainResourceAccessors;D:\AIAssessmentMultiplatform-main\composeApp\src\desktopTest\kotlin;D:\AIAssessmentMultiplatform-main\composeApp\src\androidDebug\kotlin;D:\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopTestResourceAccessors;D:\AIAssessmentMultiplatform-main\composeApp\src\desktopMain\kotlin">
+      <configuration version="5" platform="JVM 17" allPlatforms="JVM [17]" useProjectSettings="false" isTestModule="true" externalProjectId=":composeApp" pureKotlinSourceFolders="D:\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\androidDebugResourceAccessors;D:\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopMainResourceCollectors;D:\AIAssessmentMultiplatform-main\composeApp\src\debug\java;D:\AIAssessmentMultiplatform-main\composeApp\src\debug\kotlin;D:\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopMainResourceAccessors;D:\AIAssessmentMultiplatform-main\composeApp\src\desktopTest\kotlin;D:\AIAssessmentMultiplatform-main\composeApp\src\androidDebug\kotlin;D:\AIAssessmentMultiplatform-main\composeApp\build\generated\compose\resourceGenerator\kotlin\desktopTestResourceAccessors;D:\AIAssessmentMultiplatform-main\composeApp\src\desktopMain\kotlin">
         <dependsOnModuleNames>:composeApp:commonTest</dependsOnModuleNames>
         <sourceSets>
           <sourceSet>MultiPlatformProject.composeApp.commonTest</sourceSet>
@@ -15,7 +15,7 @@
         <compilerSettings />
         <compilerArguments>
           <stringArguments>
-            <stringArg name="jvmTarget" arg="11" />
+            <stringArg name="jvmTarget" arg="17" />
             <stringArg name="apiVersion" arg="1.3" />
             <stringArg name="languageVersion" arg="1.3" />
           </stringArguments>
