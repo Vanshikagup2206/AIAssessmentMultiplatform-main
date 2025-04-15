@@ -130,15 +130,15 @@ compose.desktop {
             packageVersion = "1.0.0"
             windows {
 //                iconFile.set(file(icon.ico))
-                windows {
-                    windows {
-                        javaHome = file("${rootDir}/build/jvm/jdk/jdk-17").toString()
-                        jvmArgs += listOf("-Dfile.encoding=UTF-8")
-
-
-                    }
-
-                }
+//                windows {
+//                    windows {
+//                        javaHome = file("${rootDir}/build/jvm/jdk/jdk-17").toString()
+//                        jvmArgs += listOf("-Dfile.encoding=UTF-8")
+//
+//
+//                    }
+//
+//                }
 
             }
 

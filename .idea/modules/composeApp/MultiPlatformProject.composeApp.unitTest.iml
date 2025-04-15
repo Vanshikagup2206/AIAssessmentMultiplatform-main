@@ -38,7 +38,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_11">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_17">
     <output url="file://$MODULE_DIR$/../../../composeApp/build/intermediates/javac/debug/classes" />
     <output-test url="file://$MODULE_DIR$/../../../composeApp/build/intermediates/javac/debugUnitTest/classes" />
     <exclude-output />
