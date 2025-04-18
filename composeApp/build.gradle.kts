@@ -9,10 +9,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 //    id("org.jetbrains.compose") version "1.5.10" // or latest
     kotlin("plugin.serialization") version "1.9.0"
-
-
-//    alias(libs.plugins.composeCompiler)
-
 }
 kotlin {
     androidTarget {
@@ -21,17 +17,6 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-
-//    listOf(
-//        iosX64(),
-//        iosArm64(),
-//        iosSimulatorArm64()
-//    ).forEach { iosTarget ->
-//        iosTarget.binaries.framework {
-//            baseName = "ComposeApp"
-//            isStatic = true
-//        }
-//    }
 
     jvm("desktop")
 
@@ -69,7 +54,6 @@ kotlin {
             implementation("org.apache.logging.log4j:log4j-core:2.20.0")
             implementation("org.apache.logging.log4j:log4j-api:2.20.0")
             implementation("com.google.code.gson:gson:2.10")
-//            implementation("com.google.ai.client.generativeai:generativeai:0.6.0") // Gemini AI
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4") // Coroutines
             implementation("io.ktor:ktor-client-core:2.0.0") // HTTP client for API calls
             implementation("io.ktor:ktor-client-cio:2.0.0")
@@ -85,13 +69,10 @@ kotlin {
 
 android {
     namespace = "com.vanshika.multiplatformproject"
-//    compileSdk = libs.versions.android.compileSdk.get().toInt()
     compileSdk = 34  // ✅ Hardcoded SDK version
 
     defaultConfig {
         applicationId = "com.vanshika.multiplatformproject"
-//        minSdk = libs.versions.android.minSdk.get().toInt()
-//        targetSdk = libs.versions.android.targetSdk.get().toInt()
         minSdk = 21  // ✅ Minimum SDK version (Android 5.0)
         targetSdk = 34  // ✅ Target SDK version (Android 14)
         versionCode = 1
@@ -122,26 +103,14 @@ compose.desktop {
         mainClass = "com.vanshika.multiplatformproject.MainKt"
 
         nativeDistributions {
-//            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             targetFormats(TargetFormat.Exe)
-
-//            targetFormats(org.jetbrains.compose.desktop.application.dsl.TargetFormat.Exe)
             packageName = "com.vanshika.multiplatformproject"
             packageVersion = "1.0.0"
             windows {
+                javaHome = "C:\\Program Files\\Java\\jdk-17"
+
 //                iconFile.set(file(icon.ico))
-//                windows {
-//                    windows {
-//                        javaHome = file("${rootDir}/build/jvm/jdk/jdk-17").toString()
-//                        jvmArgs += listOf("-Dfile.encoding=UTF-8")
-//
-//
-//                    }
-//
-//                }
-
             }
-
         }
     }
 }

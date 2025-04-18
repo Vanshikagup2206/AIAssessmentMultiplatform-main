@@ -15,8 +15,6 @@
 --java-options
 "'-Dcompose.application.configure.swing.globals=true'"
 --java-options
-"'-Dfile.encoding=UTF-8'"
---java-options
 "'-Dskiko.library.path=$APPDIR'"
 --resource-dir
 "D:\\AIAssessmentMultiplatform-main\\composeApp\\build\\compose\\tmp\\resources"
